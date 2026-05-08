@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Portal Educacional</title>
+
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/auth.js" defer></script>
+  </head>
+
+  <body class="login-page">
+    <main class="login-container">
+      <section class="login-card">
+        <div class="login-brand">
+          <span class="brand-logo">EAD</span>
+          <div>
+            <h1>Portal Educacional</h1>
+            <p>Acesse sua área de estudos, conteúdos e atividades.</p>
+          </div>
+        </div>
+
+        <form id="form-login" class="form">
+          <div class="input-group">
+            <label for="email">E-mail</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Digite seu e-mail"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="senha">Senha</label>
+            <input
+              type="password"
+              id="senha"
+              name="senha"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <button class="button button-primary" type="submit">Entrar</button>
+
+          <p id="login-feedback" class="feedback feedback-error hidden">
+            E-mail ou senha inválidos.
+          </p>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administração | Portal Educacional</title>
+
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/components.js" defer></script>
+    <script src="js/admin.js" defer></script>
+  </head>
+
+  <body data-page="admin">
+    <div id="header-container"></div>
+
+    <div class="app-layout">
+      <div id="sidebar-container"></div>
+
+      <main class="content">
+        <section class="page-header">
+          <div>
+            <p class="eyebrow">Área administrativa</p>
+            <h1>Administração do portal</h1>
+            <p>
+              Cadastre usuários, cursos, turmas, disciplinas e vínculos do sistema.
+            </p>
+          </div>
+        </section>
+
+        <section class="summary-grid">
+          <article class="summary-card">
+            <span class="summary-label">Usuários</span>
+            <strong>124</strong>
+            <p>cadastrados</p>
+          </article>
+
+          <article class="summary-card">
+            <span class="summary-label">Cursos</span>
+            <strong>5</strong>
+            <p>ativos</p>
+          </article>
+
+          <article class="summary-card">
+            <span class="summary-label">Turmas</span>
+            <strong>12</strong>
+            <p>em andamento</p>
+          </article>
+
+          <article class="summary-card">
+            <span class="summary-label">Disciplinas</span>
+            <strong>34</strong>
+            <p>vinculadas</p>
+          </article>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="panel" id="usuarios">
+            <div class="panel-header">
+              <h2>Cadastrar usuário</h2>
+            </div>
+
+            <form id="form-usuario" class="form">
+              <div class="input-group">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" required />
+              </div>
+
+              <div class="input-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required />
+              </div>
+
+              <div class="input-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" required />
+              </div>
+
+              <div class="input-group">
+                <label for="tipo">Tipo</label>
+                <select id="tipo" name="tipo" required>
+                  <option value="Aluno">Aluno</option>
+                  <option value="Professor">Professor</option>
+                  <option value="Administrador">Administrador</option>
+                </select>
+              </div>
+
+              <button class="button button-primary" type="submit">
+                Cadastrar usuário
+              </button>
+            </form>
+          </article>
+
+          <article class="panel" id="cursos">
+            <div class="panel-header">
+              <h2>Criar curso</h2>
+            </div>
+
+            <form id="form-curso" class="form">
+              <div class="input-group">
+                <label for="nomeCurso">Nome do curso</label>
+                <input
+                  type="text"
+                  id="nomeCurso"
+                  name="nomeCurso"
+                  placeholder="Ex: Técnico em Informática"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="descricaoCurso">Descrição</label>
+                <textarea
+                  id="descricaoCurso"
+                  name="descricaoCurso"
+                  placeholder="Breve descrição do curso."
+                ></textarea>
+              </div>
+
+              <button class="button button-primary" type="submit">
+                Criar curso
+              </button>
+            </form>
+          </article>
+
+          <article class="panel" id="turmas">
+            <div class="panel-header">
+              <h2>Criar turma</h2>
+            </div>
+
+            <form id="form-turma" class="form">
+              <div class="input-group">
+                <label for="nomeTurma">Nome da turma</label>
+                <input
+                  type="text"
+                  id="nomeTurma"
+                  name="nomeTurma"
+                  placeholder="Ex: 2º Info A"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="cursoTurma">Curso</label>
+                <select id="cursoTurma" name="cursoTurma">
+                  <option>Técnico em Informática</option>
+                  <option>Ensino Médio</option>
+                </select>
+              </div>
+
+              <button class="button button-primary" type="submit">
+                Criar turma
+              </button>
+            </form>
+          </article>
+
+          <article class="panel" id="disciplinas">
+            <div class="panel-header">
+              <h2>Criar disciplina</h2>
+            </div>
+
+            <form id="form-disciplina" class="form">
+              <div class="input-group">
+                <label for="nomeDisciplina">Nome da disciplina</label>
+                <input
+                  type="text"
+                  id="nomeDisciplina"
+                  name="nomeDisciplina"
+                  placeholder="Ex: Programação Web"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="cursoDisciplina">Curso</label>
+                <select id="cursoDisciplina" name="cursoDisciplina">
+                  <option>Técnico em Informática</option>
+                  <option>Ensino Médio</option>
+                </select>
+              </div>
+
+              <button class="button button-primary" type="submit">
+                Criar disciplina
+              </button>
+            </form>
+          </article>
+
+          <article class="panel panel-wide" id="vinculos">
+            <div class="panel-header">
+              <h2>Vínculos acadêmicos</h2>
+            </div>
+
+            <div class="split-grid">
+              <form class="form">
+                <h3>Matricular aluno em turma</h3>
+
+                <div class="input-group">
+                  <label for="alunoMatricula">Aluno</label>
+                  <select id="alunoMatricula" name="alunoMatricula">
+                    <option>Ana Clara</option>
+                    <option>Bruno Souza</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <label for="turmaMatricula">Turma</label>
+                  <select id="turmaMatricula" name="turmaMatricula">
+                    <option>2º Info A</option>
+                    <option>3º Info A</option>
+                  </select>
+                </div>
+
+                <button class="button button-secondary" type="submit">
+                  Matricular
+                </button>
+              </form>
+
+              <form class="form">
+                <h3>Vincular professor à disciplina</h3>
+
+                <div class="input-group">
+                  <label for="professorVinculo">Professor</label>
+                  <select id="professorVinculo" name="professorVinculo">
+                    <option>João Silva</option>
+                    <option>Marina Costa</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <label for="disciplinaVinculo">Disciplina</label>
+                  <select id="disciplinaVinculo" name="disciplinaVinculo">
+                    <option>Programação Web</option>
+                    <option>Banco de Dados</option>
+                  </select>
+                </div>
+
+                <button class="button button-secondary" type="submit">
+                  Vincular
+                </button>
+              </form>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <div id="footer-container"></div>
+  </body>
+</html>

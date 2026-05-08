@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel do Professor | Portal Educacional</title>
+
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/components.js" defer></script>
+    <script src="js/app.js" defer></script>
+  </head>
+
+  <body data-page="professor">
+    <div id="header-container"></div>
+
+    <div class="app-layout">
+      <div id="sidebar-container"></div>
+
+      <main class="content">
+        <section class="page-header">
+          <div>
+            <p class="eyebrow">Área do professor</p>
+            <h1>Gerencie suas disciplinas</h1>
+            <p>
+              Publique conteúdos, crie atividades e lance notas para os alunos.
+            </p>
+          </div>
+        </section>
+
+        <section class="summary-grid">
+          <article class="summary-card">
+            <span class="summary-label">Disciplinas</span>
+            <strong>3</strong>
+            <p>vinculadas ao professor</p>
+          </article>
+
+          <article class="summary-card">
+            <span class="summary-label">Turmas</span>
+            <strong>2</strong>
+            <p>turmas em andamento</p>
+          </article>
+
+          <article class="summary-card">
+            <span class="summary-label">Atividades</span>
+            <strong>6</strong>
+            <p>publicadas no mês</p>
+          </article>
+
+          <article class="summary-card">
+            <span class="summary-label">Notas</span>
+            <strong>18</strong>
+            <p>lançamentos pendentes</p>
+          </article>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="panel" id="disciplinas">
+            <div class="panel-header">
+              <h2>Minhas disciplinas</h2>
+            </div>
+
+            <div class="course-list">
+              <article class="course-card">
+                <div>
+                  <h3>Programação Web</h3>
+                  <p>Turma: 2º Info A • 28 alunos</p>
+                </div>
+                <button class="button button-secondary" type="button">
+                  Gerenciar
+                </button>
+              </article>
+
+              <article class="course-card">
+                <div>
+                  <h3>Projeto Integrador</h3>
+                  <p>Turma: 3º Info A • 24 alunos</p>
+                </div>
+                <button class="button button-secondary" type="button">
+                  Gerenciar
+                </button>
+              </article>
+            </div>
+          </article>
+
+          <article class="panel" id="conteudos">
+            <div class="panel-header">
+              <h2>Novo conteúdo</h2>
+            </div>
+
+            <form class="form">
+              <div class="input-group">
+                <label for="conteudoDisciplina">Disciplina</label>
+                <select id="conteudoDisciplina" name="conteudoDisciplina">
+                  <option>Programação Web</option>
+                  <option>Projeto Integrador</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <label for="tituloConteudo">Título</label>
+                <input
+                  type="text"
+                  id="tituloConteudo"
+                  name="tituloConteudo"
+                  placeholder="Ex: Aula 05 — JavaScript básico"
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="descricaoConteudo">Descrição</label>
+                <textarea
+                  id="descricaoConteudo"
+                  name="descricaoConteudo"
+                  placeholder="Descreva o material ou cole um link."
+                ></textarea>
+              </div>
+
+              <button class="button button-primary" type="submit">
+                Publicar conteúdo
+              </button>
+            </form>
+          </article>
+
+          <article class="panel" id="atividades">
+            <div class="panel-header">
+              <h2>Nova atividade</h2>
+            </div>
+
+            <form class="form">
+              <div class="input-group">
+                <label for="atividadeDisciplina">Disciplina</label>
+                <select id="atividadeDisciplina" name="atividadeDisciplina">
+                  <option>Programação Web</option>
+                  <option>Projeto Integrador</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <label for="tituloAtividade">Título</label>
+                <input
+                  type="text"
+                  id="tituloAtividade"
+                  name="tituloAtividade"
+                  placeholder="Ex: Trabalho de Landing Page"
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="dataEntrega">Data de entrega</label>
+                <input type="date" id="dataEntrega" name="dataEntrega" />
+              </div>
+
+              <button class="button button-primary" type="submit">
+                Criar atividade
+              </button>
+            </form>
+          </article>
+
+          <article class="panel" id="notas">
+            <div class="panel-header">
+              <h2>Lançar notas</h2>
+            </div>
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Aluno</th>
+                    <th>Atividade</th>
+                    <th>Nota</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ana Clara</td>
+                    <td>Projeto 1</td>
+                    <td><input class="table-input" type="number" value="9" /></td>
+                  </tr>
+                  <tr>
+                    <td>Bruno Souza</td>
+                    <td>Projeto 1</td>
+                    <td><input class="table-input" type="number" value="8.5" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <button class="button button-primary mt-16" type="button">
+              Salvar notas
+            </button>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <div id="footer-container"></div>
+  </body>
+</html>
