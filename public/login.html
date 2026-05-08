@@ -1,82 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login</title>
-  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=636sGvjTOSj6VtJaxUXPkWRT97mhZSpFrI8FGWnsrd8PpDrjtD0nWc2g2zmiRVPoHC8Bo5JHnyF_fO7xKwN1Rf0l02AmIhAF8EGJGFisa00jmOA6hDd6aqfuVtYeF9d6hLxskI0zMvgvFcqW1HS-XYetAZY-C3ew-Wm5Io1ZKkgWyjwdhnFhCEziW8mxvAn_uPFuxY0VbT5K47UUxbM_S-_vmgIoyINkCf404Kxat2urWYZINkstPY9EnYe89j-CfQhhCsdpFEb3Koq3JazOzQ" charset="UTF-8"></script><style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      width: 100%;
-      max-width: 380px;
-      background: #fff;
-      padding: 28px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.08);
-    }
-    h1 {
-      margin: 0 0 20px;
-      font-size: 28px;
-      text-align: center;
-    }
-    form { display: grid; gap: 14px; }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #cfd6dd;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    button {
-      border: 0;
-      background: #2563eb;
-      color: #fff;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .erro {
-      margin-top: 14px;
-      color: #b91c1c;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-  </style>
-</head>
-<body>
-  <main class="card">
-    <h1>Login</h1>
-    <form>
-      <div>
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="Digite seu email" />
-      </div>
-      <div>
-        <label for="senha">Senha</label>
-        <input type="password" id="senha" name="senha" placeholder="Digite sua senha" />
-      </div>
-      <button type="submit">Entrar</button>
-    </form>
-    <div class="erro">Email ou senha inválidos.</div>
-  </main>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="scripts.js" defer></script>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Login</h1>
+      <form>
+        <div>
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Digite seu email"
+          />
+        </div>
+        <div>
+          <label for="senha">Senha</label>
+          <input
+            type="password"
+            id="senha"
+            name="senha"
+            placeholder="Digite sua senha"
+          />
+        </div>
+        <button type="submit">Entrar</button>
+      </form>
+      <div class="erro">Email ou senha inválidos.</div>
+    </main>
+  </body>
 </html>

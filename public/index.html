@@ -1,183 +1,111 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel</title>
-  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=bcfMyigZXM80grtEyu2S1_4-uMSE3H6Pssv2THS0-hPXC6JFqpG6VTjae5wnu5dlJ6Q63BiuWMPiQf9UIzB_O6eDE0Z5P2X8bE9CkaKDpf-5nzkkK-_xmgPYVVgxk3oWK6B_C3qY2xMelBptKTk9S77UkyiOno47Qen1n5eo42Q-R4pqxiG6bFGWbMCFeP16A4RW4Oh1ipDyzHlJWtGoyARir_LlIHhTOSHyDR1-Rf2cU9zWXCEUvEFOuIGn62ZKESa7aW1xBkigZxGFsrkUvg" charset="UTF-8"></script><style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      color: #1f2937;
-    }
-    header {
-      background: #111827;
-      color: #fff;
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    nav {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    nav a, .perfil a {
-      color: #fff;
-      text-decoration: none;
-      background: rgba(255,255,255,.08);
-      padding: 8px 12px;
-      border-radius: 8px;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 24px auto;
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-    .card {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.06);
-    }
-    h2 {
-      margin-top: 0;
-      font-size: 22px;
-    }
-    form { display: grid; gap: 12px; }
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #cfd6dd;
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: inherit;
-    }
-    textarea { min-height: 100px; resize: vertical; }
-    button {
-      border: 0;
-      background: #2563eb;
-      color: #fff;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <nav>
-      <a href="#registrar-usuario">Registrar Usuário</a>
-      <a href="#criar-curso">Criar Curso</a>
-      <a href="#criar-disciplina">Criar Disciplina</a>
-    </nav>
-    <div class="perfil">
-      <a href="#editar-perfil">👤 Perfil</a>
-      <a href="#sair">Sair</a>
-    </div>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="scripts.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="#registrar-usuario">Registrar Usuário</a>
+        <a href="#criar-curso">Criar Curso</a>
+        <a href="#criar-disciplina">Criar Disciplina</a>
+      </nav>
+      <div class="perfil">
+        <a href="#editar-perfil">👤 Perfil</a>
+        <a href="#sair">Sair</a>
+      </div>
+    </header>
 
-  <main class="container">
-    <section class="card" id="registrar-usuario">
-      <h2>Registrar Usuário</h2>
-      <form>
-        <div>
-          <label for="nome">Nome</label>
-          <input type="text" id="nome" name="nome" />
-        </div>
-        <div>
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" />
-        </div>
-        <div>
-          <label for="senha">Senha</label>
-          <input type="password" id="senha" name="senha" />
-        </div>
-        <div>
-          <label for="tipo">Tipo</label>
-          <select id="tipo" name="tipo">
-            <option>Aluno</option>
-            <option>Professor</option>
-            <option>Administrador</option>
-          </select>
-        </div>
-        <div>
-          <label for="cursoUsuario">ID do Curso</label>
-          <select id="cursoUsuario" name="cursoUsuario">
-            <option>Ciencia</option>
-            <option>Ciencias Sociais</option>
-            <option>Turma</option>
-            <option>Turma1</option>
-            <option>Turma2</option>
-          </select>
-        </div>
-        <button type="submit">Registrar</button>
-      </form>
-    </section>
+    <main class="container">
+      <section class="card" id="registrar-usuario">
+        <h2>Registrar Usuário</h2>
+        <form>
+          <div>
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" />
+          </div>
+          <div>
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" name="senha" />
+          </div>
+          <div>
+            <label for="tipo">Tipo</label>
+            <select id="tipo" name="tipo">
+              <option>Aluno</option>
+              <option>Professor</option>
+              <option>Administrador</option>
+            </select>
+          </div>
+          <div>
+            <label for="cursoUsuario">ID do Curso</label>
+            <select id="cursoUsuario" name="cursoUsuario">
+              <option>Ciencia</option>
+              <option>Ciencias Sociais</option>
+              <option>Turma</option>
+              <option>Turma1</option>
+              <option>Turma2</option>
+            </select>
+          </div>
+          <button type="submit">Registrar</button>
+        </form>
+      </section>
 
-    <section class="card" id="criar-curso">
-      <h2>Criar Curso</h2>
-      <form>
-        <div>
-          <label for="nomeCurso">Nome do Curso</label>
-          <input type="text" id="nomeCurso" name="nomeCurso" />
-        </div>
-        <div>
-          <label for="descricaoCurso">Descrição</label>
-          <textarea id="descricaoCurso" name="descricaoCurso"></textarea>
-        </div>
-        <button type="submit">Criar Curso</button>
-      </form>
-    </section>
+      <section class="card" id="criar-curso">
+        <h2>Criar Curso</h2>
+        <form>
+          <div>
+            <label for="nomeCurso">Nome do Curso</label>
+            <input type="text" id="nomeCurso" name="nomeCurso" />
+          </div>
+          <div>
+            <label for="descricaoCurso">Descrição</label>
+            <textarea id="descricaoCurso" name="descricaoCurso"></textarea>
+          </div>
+          <button type="submit">Criar Curso</button>
+        </form>
+      </section>
 
-    <section class="card" id="criar-disciplina">
-      <h2>Criar Disciplina</h2>
-      <form>
-        <div>
-          <label for="nomeDisciplina">Nome da Disciplina</label>
-          <input type="text" id="nomeDisciplina" name="nomeDisciplina" />
-        </div>
-        <div>
-          <label for="cursoDisciplina">ID do Curso</label>
-          <input type="text" id="cursoDisciplina" name="cursoDisciplina" />
-        </div>
-        <button type="submit">Criar Disciplina</button>
-      </form>
-    </section>
+      <section class="card" id="criar-disciplina">
+        <h2>Criar Disciplina</h2>
+        <form>
+          <div>
+            <label for="nomeDisciplina">Nome da Disciplina</label>
+            <input type="text" id="nomeDisciplina" name="nomeDisciplina" />
+          </div>
+          <div>
+            <label for="cursoDisciplina">ID do Curso</label>
+            <input type="text" id="cursoDisciplina" name="cursoDisciplina" />
+          </div>
+          <button type="submit">Criar Disciplina</button>
+        </form>
+      </section>
 
-    <section class="card" id="editar-perfil">
-      <h2>Editar Perfil</h2>
-      <form>
-        <div>
-          <label for="perfilNome">Nome</label>
-          <input type="text" id="perfilNome" name="perfilNome" />
-        </div>
-        <div>
-          <label for="perfilEmail">Email</label>
-          <input type="email" id="perfilEmail" name="perfilEmail" />
-        </div>
-        <div>
-          <label for="novaSenha">Nova Senha</label>
-          <input type="password" id="novaSenha" name="novaSenha" />
-        </div>
-        <button type="submit">Atualizar Perfil</button>
-      </form>
-    </section>
-  </main>
-</body>
+      <section class="card" id="editar-perfil">
+        <h2>Editar Perfil</h2>
+        <form>
+          <div>
+            <label for="perfilNome">Nome</label>
+            <input type="text" id="perfilNome" name="perfilNome" />
+          </div>
+          <div>
+            <label for="perfilEmail">Email</label>
+            <input type="email" id="perfilEmail" name="perfilEmail" />
+          </div>
+          <div>
+            <label for="novaSenha">Nova Senha</label>
+            <input type="password" id="novaSenha" name="novaSenha" />
+          </div>
+          <button type="submit">Atualizar Perfil</button>
+        </form>
+      </section>
+    </main>
+  </body>
 </html>

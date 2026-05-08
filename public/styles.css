@@ -1,28 +1,28 @@
 /*Import da Fonte (ROBOTO)*/
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
 
 /*Paleta de Cores - PLACEHOLDER - (Precisa ser Definido ainda)*/
 :root {
-    --white:        #FFFFFF;
-    --cambridge:    #8AA78D;
-    --calpoly:      #154E1A;
-    --dark-green:   #0B270D;
-    --black:        #000000;
-  
-    --bg-light:   var(--white);
-    --bg-dark:    var(--dark-green);
-    --clr:        var(--calpoly);
-    --clr-alpha:  var(--cambridge)80;
-    --bg-start:   var(--white);
-    --bg-end:     var(--cambridge);
-  }
+  --white: #ffffff;
+  --cambridge: #8aa78d;
+  --calpoly: #154e1a;
+  --dark-green: #0b270d;
+  --black: #000000;
+
+  --bg-light: var(--white);
+  --bg-dark: var(--dark-green);
+  --clr: var(--calpoly);
+  --clr-alpha: var(--cambridge) 80;
+  --bg-start: var(--white);
+  --bg-end: var(--cambridge);
+}
 
 /*Tipografia*/
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 /*CFG do Body*/
@@ -111,7 +111,9 @@ main {
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 300ms, color 300ms;
+  transition:
+    background-color 300ms,
+    color 300ms;
 }
 
 /*Botão de Envio - Hover*/
@@ -134,4 +136,146 @@ main {
     padding: 1.5rem 1rem;
     max-width: 100%;
   }
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  color: #1f2937;
+}
+header {
+  background: #111827;
+  color: #fff;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+nav {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+nav a,
+.perfil a {
+  color: #fff;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+.container {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+h2 {
+  margin-top: 0;
+  font-size: 22px;
+}
+form {
+  display: grid;
+  gap: 12px;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cfd6dd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+button {
+  border: 0;
+  background: #2563eb;
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.card {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+h1 {
+  margin: 0 0 20px;
+  font-size: 28px;
+  text-align: center;
+}
+form {
+  display: grid;
+  gap: 14px;
+}
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cfd6dd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+button {
+  border: 0;
+  background: #2563eb;
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.erro {
+  margin-top: 14px;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
 }
