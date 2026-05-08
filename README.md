@@ -1,49 +1,321 @@
-# Back-end EAD simples com login
+# Portal Educacional EAD
 
-Este projeto é um back-end simples para a primeira entrega de um sistema EAD.
+Projeto acadêmico de um **Portal Educacional EAD**, inspirado em plataformas como Moodle, com áreas separadas para **alunos**, **professores** e **administradores**.
 
-Ele foi feito com:
+O projeto está em fase inicial e atualmente possui:
+
+- uma API em Node.js/Express;
+- autenticação simples com token;
+- dados temporários salvos em memória;
+- estrutura inicial de frontend em HTML, CSS e JavaScript;
+- páginas separadas para aluno, professor e administrador;
+- componentes visuais reutilizáveis para header, sidebar e footer.
+
+> Observação: neste momento, frontend e backend ainda estão em desenvolvimento e podem não estar totalmente integrados entre si. A integração completa será feita em uma etapa posterior.
+
+---
+
+## Tecnologias utilizadas
 
 - Node.js
 - Express
-- Dados salvos em memória
-- Login básico
+- JavaScript
+- HTML5
+- CSS3
+- Armazenamento temporário em memória
 
-## O que o projeto faz
+---
 
-O sistema permite:
+## Objetivo do sistema
 
-- Fazer login
-- Criar e listar alunos
-- Criar e listar professores
-- Criar e listar cursos
-- Criar e listar disciplinas
-- Criar e listar turmas
+A ideia do sistema é criar um portal educacional onde diferentes perfis tenham acessos e funções específicas.
 
-## O que ele ainda não faz
+### Aluno
 
-Nesta primeira versão, ele ainda não possui:
+O aluno deverá conseguir:
 
-- Banco de dados MySQL
-- Upload de arquivos
-- Materiais
-- Avisos
-- Notas
-- Atividades
-- Edição
-- Exclusão
+- visualizar disciplinas em que está matriculado;
+- acessar conteúdos publicados pelos professores;
+- visualizar atividades;
+- acompanhar notas lançadas pelos professores.
 
-## Observação importante sobre memória
+### Professor
 
-Os dados ficam salvos apenas enquanto o servidor está ligado.
+O professor deverá conseguir:
 
-Se você fechar o servidor e abrir de novo, os dados criados somem.
+- visualizar as disciplinas em que foi vinculado;
+- publicar conteúdos;
+- criar atividades;
+- lançar notas dos alunos.
 
-Isso acontece porque ainda não estamos usando banco de dados.
+### Administrador
 
-## Usuário inicial para testar
+O administrador deverá conseguir:
 
-Como o sistema exige login, já existe um usuário administrador inicial:
+- cadastrar usuários;
+- cadastrar cursos;
+- cadastrar turmas;
+- cadastrar disciplinas;
+- organizar vínculos entre alunos, professores, turmas e disciplinas.
+
+---
+
+## Estado atual do projeto
+
+Nesta versão, o projeto possui uma base funcional de backend e uma primeira estrutura de frontend.
+
+### Já existe no backend
+
+- Login básico;
+- autenticação por token;
+- cadastro e listagem de alunos;
+- cadastro e listagem de professores;
+- cadastro e listagem de cursos;
+- cadastro e listagem de disciplinas;
+- cadastro e listagem de turmas;
+- dados salvos em memória.
+
+### Já existe no frontend
+
+- tela de login;
+- painel do aluno;
+- painel do professor;
+- painel do administrador;
+- header separado em componente HTML;
+- sidebar separada por tipo de usuário;
+- footer separado em componente HTML;
+- CSS base com identidade visual própria;
+- JavaScript inicial para carregamento de componentes.
+
+### Ainda não existe ou ainda não está finalizado
+
+- integração completa entre frontend e backend;
+- persistência em banco de dados;
+- upload de arquivos;
+- envio real de atividades;
+- lançamento real de notas pelo frontend;
+- edição e exclusão de registros;
+- controle completo de permissões por tela;
+- sistema de materiais/conteúdos integrado ao backend;
+- sistema de avisos;
+- dashboard com dados reais vindos da API.
+
+---
+
+## Estrutura de pastas
+
+A estrutura atual do projeto está organizada da seguinte forma:
+
+```txt
+PI5 - base/
+├── database/
+│   └── DB.sql
+│
+├── docs/
+│   └── Banco de dados.png
+│
+├── old/
+│   ├── interacao.js
+│   └── server.js
+│
+├── public/
+│   ├── login.html
+│   ├── aluno.html
+│   ├── professor.html
+│   ├── admin.html
+│   │
+│   ├── components/
+│   │   ├── header.html
+│   │   ├── footer.html
+│   │   ├── sidebar-aluno.html
+│   │   ├── sidebar-professor.html
+│   │   └── sidebar-admin.html
+│   │
+│   ├── css/
+│   │   └── styles.css
+│   │
+│   └── js/
+│       ├── auth.js
+│       ├── app.js
+│       ├── admin.js
+│       └── components.js
+│
+├── src/
+│   ├── app.js
+│   ├── server.js
+│   │
+│   ├── controllers/
+│   │   ├── alunos.controller.js
+│   │   ├── auth.controller.js
+│   │   ├── cursos.controller.js
+│   │   ├── disciplinas.controller.js
+│   │   ├── professores.controller.js
+│   │   └── turmas.controller.js
+│   │
+│   ├── database/
+│   │   └── memoria.js
+│   │
+│   ├── middlewares/
+│   │   └── auth.middleware.js
+│   │
+│   ├── routes/
+│   │   ├── alunos.routes.js
+│   │   ├── auth.routes.js
+│   │   ├── cursos.routes.js
+│   │   ├── disciplinas.routes.js
+│   │   ├── professores.routes.js
+│   │   └── turmas.routes.js
+│   │
+│   └── utils/
+│       └── validacoes.js
+│
+├── package.json
+├── package-lock.json
+└── README.md
+```
+
+---
+
+## Explicação das principais pastas
+
+### `public/`
+
+Contém os arquivos do frontend.
+
+Nesta pasta ficam as páginas HTML, os arquivos CSS, os scripts do navegador e os componentes reutilizáveis.
+
+### `public/components/`
+
+Contém partes reutilizáveis da interface:
+
+- `header.html`;
+- `footer.html`;
+- `sidebar-aluno.html`;
+- `sidebar-professor.html`;
+- `sidebar-admin.html`.
+
+Esses arquivos existem para evitar repetir o mesmo código em várias páginas. Assim, se for necessário alterar o header, por exemplo, basta editar `header.html`.
+
+### `public/css/`
+
+Contém o arquivo principal de estilos do frontend.
+
+### `public/js/`
+
+Contém os scripts do frontend.
+
+Exemplos:
+
+- carregamento dos componentes HTML;
+- lógica inicial de login;
+- scripts provisórios das telas;
+- funções que futuramente irão se comunicar com a API.
+
+### `src/`
+
+Contém o backend da aplicação.
+
+### `src/server.js`
+
+Arquivo responsável por iniciar o servidor.
+
+### `src/app.js`
+
+Arquivo responsável por configurar o Express, registrar middlewares e conectar as rotas da API.
+
+### `src/controllers/`
+
+Contém as funções que recebem as requisições e retornam respostas.
+
+Exemplos:
+
+- criar aluno;
+- listar alunos;
+- criar curso;
+- fazer login.
+
+### `src/routes/`
+
+Contém os arquivos que definem os caminhos da API.
+
+Exemplos:
+
+```txt
+/auth/login
+/alunos
+/professores
+/cursos
+/disciplinas
+/turmas
+```
+
+### `src/database/memoria.js`
+
+Contém os dados temporários usados pelo sistema enquanto ainda não há banco de dados integrado.
+
+### `src/middlewares/`
+
+Contém funções intermediárias, como a verificação de autenticação.
+
+### `src/utils/`
+
+Contém funções auxiliares e validações reutilizáveis.
+
+### `database/`
+
+Contém arquivos relacionados ao banco de dados, como scripts SQL.
+
+### `docs/`
+
+Contém materiais de documentação, diagramas ou imagens auxiliares do projeto.
+
+### `old/`
+
+Contém arquivos antigos mantidos apenas como referência temporária.
+
+Esses arquivos não fazem parte da versão atual principal do sistema.
+
+---
+
+## Como rodar o projeto
+
+### 1. Instalar as dependências
+
+```bash
+npm install
+```
+
+### 2. Criar o arquivo `.env`
+
+Na raiz do projeto, crie um arquivo chamado `.env` com:
+
+```env
+PORT=3000
+```
+
+### 3. Iniciar o servidor
+
+```bash
+npm start
+```
+
+Ou, se estiver usando o script de desenvolvimento:
+
+```bash
+npm run dev
+```
+
+Se tudo estiver correto, o terminal deverá mostrar algo parecido com:
+
+```bash
+Servidor rodando em http://localhost:3000
+```
+
+---
+
+## Usuário inicial para testes
+
+Existe um usuário administrador inicial para testar o login da API:
 
 ```json
 {
@@ -52,45 +324,17 @@ Como o sistema exige login, já existe um usuário administrador inicial:
 }
 ```
 
-Use esse usuário para fazer login primeiro.
+---
 
-## Como rodar o projeto
+## Funcionamento atual da autenticação
 
-### 1. Instalar dependências
-
-```bash
-npm install
-```
-
-### 2. Criar arquivo .env
-
-Crie um arquivo chamado `.env` com este conteúdo:
-
-```env
-PORT=3000
-```
-
-### 3. Rodar o servidor
-
-```bash
-npm start
-```
-
-Se funcionar, aparecerá:
-
-```bash
-Servidor rodando em http://localhost:3000
-```
-
-## Como funciona o login
-
-Primeiro você faz login em:
+O login é feito pela rota:
 
 ```txt
 POST /auth/login
 ```
 
-Exemplo:
+Exemplo de requisição:
 
 ```bash
 curl -X POST http://localhost:3000/auth/login \
@@ -101,12 +345,12 @@ curl -X POST http://localhost:3000/auth/login \
   }'
 ```
 
-A resposta será parecida com:
+A resposta retorna um token:
 
 ```json
 {
   "mensagem": "Login realizado com sucesso.",
-  "token": "um-token-gerado-pelo-sistema",
+  "token": "token-gerado-pelo-sistema",
   "usuario": {
     "id": 1,
     "nome": "Administrador",
@@ -116,42 +360,63 @@ A resposta será parecida com:
 }
 ```
 
-Copie o valor do `token`.
-
-Depois, nas outras rotas, envie esse token no cabeçalho:
+Esse token deve ser enviado nas rotas protegidas pelo cabeçalho:
 
 ```txt
 Authorization: Bearer SEU_TOKEN_AQUI
 ```
 
-## Rotas disponíveis
+---
 
-Todas essas rotas precisam de login:
+## Rotas disponíveis na API
+
+### Autenticação
+
+```txt
+POST /auth/login
+GET  /auth/me
+```
+
+### Alunos
 
 ```txt
 GET  /alunos
 POST /alunos
+```
 
+### Professores
+
+```txt
 GET  /professores
 POST /professores
+```
 
+### Cursos
+
+```txt
 GET  /cursos
 POST /cursos
+```
 
+### Disciplinas
+
+```txt
 GET  /disciplinas
 POST /disciplinas
+```
 
+### Turmas
+
+```txt
 GET  /turmas
 POST /turmas
 ```
 
-A única rota principal que não precisa de login é:
+As rotas de alunos, professores, cursos, disciplinas e turmas exigem autenticação.
 
-```txt
-POST /auth/login
-```
+---
 
-## Exemplos de uso
+## Exemplos de uso da API
 
 ### Criar aluno
 
@@ -171,13 +436,6 @@ curl -X POST http://localhost:3000/alunos \
   }'
 ```
 
-### Listar alunos
-
-```bash
-curl http://localhost:3000/alunos \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI"
-```
-
 ### Criar professor
 
 ```bash
@@ -195,13 +453,6 @@ curl -X POST http://localhost:3000/professores \
   }'
 ```
 
-### Listar professores
-
-```bash
-curl http://localhost:3000/professores \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI"
-```
-
 ### Criar curso
 
 ```bash
@@ -209,19 +460,12 @@ curl -X POST http://localhost:3000/cursos \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer SEU_TOKEN_AQUI" \
   -d '{
-    "nome": "Sistemas para Internet",
-    "descricao": "Curso voltado ao desenvolvimento web",
+    "nome": "Técnico em Informática",
+    "descricao": "Curso voltado à formação técnica na área de tecnologia.",
     "cargaHorariaTotal": 1200,
     "categoria": "Tecnologia",
     "status": "ativo"
   }'
-```
-
-### Listar cursos
-
-```bash
-curl http://localhost:3000/cursos \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI"
 ```
 
 ### Criar disciplina
@@ -232,17 +476,10 @@ curl -X POST http://localhost:3000/disciplinas \
   -H "Authorization: Bearer SEU_TOKEN_AQUI" \
   -d '{
     "nome": "Programação Web",
-    "descricao": "Introdução ao desenvolvimento web",
+    "descricao": "Introdução ao desenvolvimento de aplicações web.",
     "cargaHoraria": 60,
     "professorResponsavelId": 1
   }'
-```
-
-### Listar disciplinas
-
-```bash
-curl http://localhost:3000/disciplinas \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI"
 ```
 
 ### Criar turma
@@ -252,8 +489,8 @@ curl -X POST http://localhost:3000/turmas \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer SEU_TOKEN_AQUI" \
   -d '{
-    "codigo": "TURMA-A-2026",
-    "nome": "Turma A",
+    "codigo": "INFO-2026-A",
+    "nome": "2º Info A",
     "disciplinaId": 1,
     "professorId": 1,
     "periodoLetivo": "2026/1",
@@ -262,58 +499,77 @@ curl -X POST http://localhost:3000/turmas \
   }'
 ```
 
-### Listar turmas
+---
 
-```bash
-curl http://localhost:3000/turmas \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI"
-```
+## Sobre o frontend
 
-## Explicação simples da estrutura
-
-### src/server.js
-
-Liga o servidor.
-
-### src/app.js
-
-Configura o Express e conecta todas as rotas.
-
-### src/database/memoria.js
-
-Guarda os dados temporários do sistema.
-
-### src/middlewares/auth.middleware.js
-
-Verifica se o usuário enviou um token válido.
-
-### src/routes
-
-Guarda os arquivos com os caminhos da API.
-
-Exemplo:
+O frontend está organizado em páginas separadas por perfil:
 
 ```txt
-/alunos
-/professores
-/auth/login
+login.html       → tela de login
+aluno.html       → painel do aluno
+professor.html   → painel do professor
+admin.html       → painel administrativo
 ```
 
-### src/controllers
+As páginas utilizam componentes HTML separados:
 
-Guarda as funções que executam as ações.
+```txt
+components/header.html
+components/footer.html
+components/sidebar-aluno.html
+components/sidebar-professor.html
+components/sidebar-admin.html
+```
 
-Exemplo:
+O carregamento desses componentes é feito via JavaScript, usando `fetch`.
 
-- criar aluno
-- listar aluno
-- fazer login
+Por isso, ao testar apenas o frontend, é recomendado rodar o projeto por um servidor local. Abrir os arquivos diretamente com `file:///` pode impedir o carregamento dos componentes.
 
-## Ordem recomendada para testar
+---
 
-1. Fazer login com admin
-2. Criar professor
-3. Criar disciplina
-4. Criar turma
-5. Criar aluno
-6. Listar os dados
+## Observação sobre integração frontend/backend
+
+Neste momento, o frontend serve principalmente como protótipo visual e estrutural do portal.
+
+Algumas chamadas JavaScript já apontam para rotas de API, mas a integração final entre telas, formulários, autenticação, permissões e dados reais ainda precisa ser revisada.
+
+Essa integração será uma etapa futura do projeto.
+
+---
+
+## Observação sobre armazenamento em memória
+
+Os dados atuais ficam salvos apenas enquanto o servidor está rodando.
+
+Se o servidor for encerrado, os dados cadastrados são perdidos.
+
+Isso acontece porque a versão atual ainda usa armazenamento em memória. O arquivo `database/DB.sql` serve como referência inicial para a futura integração com banco de dados.
+
+---
+
+## Ordem recomendada para testes da API
+
+1. Fazer login com o usuário administrador.
+2. Copiar o token retornado.
+3. Criar um professor.
+4. Criar um curso.
+5. Criar uma disciplina.
+6. Criar uma turma.
+7. Criar um aluno.
+8. Listar os dados cadastrados.
+
+---
+
+## Próximos passos sugeridos
+
+- Servir oficialmente a pasta `public` pelo Express;
+- alinhar as rotas chamadas pelo frontend com as rotas existentes no backend;
+- integrar o login visual com o login real da API;
+- salvar o token no navegador após login;
+- proteger páginas por perfil de usuário;
+- conectar formulários administrativos às rotas reais;
+- criar rotas para conteúdos, atividades e notas;
+- integrar o projeto ao banco de dados;
+- adicionar edição e exclusão de registros;
+- melhorar validações e mensagens de erro.
