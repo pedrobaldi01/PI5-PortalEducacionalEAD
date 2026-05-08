@@ -1,0 +1,21 @@
+
+BACKLOG
+- Finalizar alterações no Banco de Dados
+- Planejar páginas futuras e Corrigir links do header/sidebar
+- Planejar entidades futuras: conteúdos, atividades e notas
+- Definir permissões por perfil
+- Mapear telas futuras com rotas do backend
+- Revisar carregamento dos componentes
+- Revisar formulários de envio e Criar feedbacks visuais
+- Atualizar README (fim da Sprint)
+- Reestruturar o painel de alunos, professores e admins conforme novas páginas
+- Revisar CSS (novos componentes de páginas)
+- Implementar funcionalidades no backend conforme necessidade
+
+TESTES
+- Testar erros via Devtools do Navegador
+- Testar Conexão com o Banco de Dados
+- Testar login e cadastro (DB)
+- Testar o painel de alunos, professores e admins
+- Testar responsividade
+- Testar componentes reutilizáveis
