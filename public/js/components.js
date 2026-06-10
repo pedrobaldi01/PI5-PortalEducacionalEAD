@@ -21,6 +21,7 @@ async function carregarComponentes() {
   }
 
   marcarLinkAtivo();
+  carregarUsuarioHeader();
   configurarLogout();
 }
 
@@ -74,14 +75,26 @@ function configurarLogout() {
   }
 
   botaoSair.addEventListener("click", async () => {
-    try {
-      await fetch("/api/logout", {
-        method: "POST"
-      });
-    } catch (erro) {
-      console.error("Erro ao encerrar sessão:", erro);
-    }
-
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
     window.location.href = "login.html";
   });
+}
+
+function carregarUsuarioHeader() {
+  const elementoNome = document.getElementById("header-user-name");
+
+  if (!elementoNome) {
+    return;
+  }
+
+  try {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+    if (usuario?.nome) {
+      elementoNome.textContent = usuario.nome;
+    }
+  } catch (erro) {
+    console.error("Não foi possível ler o usuário salvo:", erro);
+  }
 }

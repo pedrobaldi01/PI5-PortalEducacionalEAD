@@ -1,6 +1,6 @@
 
 BACKLOG
-- Finalizar alterações no Banco de Dados
+- Revisar schema e seeds do Banco de Dados conforme novas entidades
 - Planejar páginas futuras e Corrigir links do header/sidebar
 - Planejar entidades futuras: conteúdos, atividades e notas
 - Definir permissões por perfil
@@ -14,8 +14,8 @@ BACKLOG
 
 TESTES
 - Testar erros via Devtools do Navegador
-- Testar Conexão com o Banco de Dados
-- Testar login e cadastro (DB)
+- Testar Conexão com o Banco de Dados em MySQL local
+- Testar login, cadastro e rotas novas (DB)
 - Testar o painel de alunos, professores e admins
 - Testar responsividade
 - Testar componentes reutilizáveis

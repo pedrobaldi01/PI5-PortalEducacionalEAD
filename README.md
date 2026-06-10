@@ -6,7 +6,8 @@ O projeto está em fase inicial e atualmente possui:
 
 - uma API em Node.js/Express;
 - autenticação simples com token;
-- dados temporários salvos em memória;
+- conexão com banco MySQL;
+- dados persistidos nas tabelas do schema local;
 - estrutura inicial de frontend em HTML, CSS e JavaScript;
 - páginas separadas para aluno, professor e administrador;
 - componentes visuais reutilizáveis para header, sidebar e footer.
@@ -22,7 +23,7 @@ O projeto está em fase inicial e atualmente possui:
 - JavaScript
 - HTML5
 - CSS3
-- Armazenamento temporário em memória
+- MySQL
 
 ---
 
@@ -73,11 +74,12 @@ Nesta versão, o projeto possui uma base funcional de backend e uma primeira est
 - cadastro e listagem de cursos;
 - cadastro e listagem de disciplinas;
 - cadastro e listagem de turmas;
-- dados salvos em memória.
+- persistência em banco MySQL usando o schema `database/DB.sql`;
+- rotas iniciais para matrículas, materiais, atividades, envios, notas e avisos.
 
 ### Já existe no frontend
 
-- tela de login;
+- tela de login integrada com a rota `/auth/login`;
 - painel do aluno;
 - painel do professor;
 - painel do administrador;
@@ -85,19 +87,19 @@ Nesta versão, o projeto possui uma base funcional de backend e uma primeira est
 - sidebar separada por tipo de usuário;
 - footer separado em componente HTML;
 - CSS base com identidade visual própria;
-- JavaScript inicial para carregamento de componentes.
+- JavaScript para carregamento de componentes;
+- armazenamento do token e dos dados do usuário no `localStorage` após o login.
 
 ### Ainda não existe ou ainda não está finalizado
 
 - integração completa entre frontend e backend;
-- persistência em banco de dados;
+- conexão dos formulários administrativos com as rotas reais da API;
+- carregamento de dados reais nos painéis de aluno, professor e administrador;
 - upload de arquivos;
 - envio real de atividades;
 - lançamento real de notas pelo frontend;
 - edição e exclusão de registros;
 - controle completo de permissões por tela;
-- sistema de materiais/conteúdos integrado ao backend;
-- sistema de avisos;
 - dashboard com dados reais vindos da API.
 
 ---
@@ -146,13 +148,20 @@ PI5 - base/
 │   │
 │   ├── controllers/
 │   │   ├── alunos.controller.js
+│   │   ├── atividades.controller.js
 │   │   ├── auth.controller.js
+│   │   ├── avisos.controller.js
 │   │   ├── cursos.controller.js
 │   │   ├── disciplinas.controller.js
+│   │   ├── enviosAtividades.controller.js
+│   │   ├── materiais.controller.js
+│   │   ├── matriculas.controller.js
+│   │   ├── notas.controller.js
 │   │   ├── professores.controller.js
 │   │   └── turmas.controller.js
 │   │
 │   ├── database/
+│   │   ├── conexao.js
 │   │   └── memoria.js
 │   │
 │   ├── middlewares/
@@ -160,13 +169,22 @@ PI5 - base/
 │   │
 │   ├── routes/
 │   │   ├── alunos.routes.js
+│   │   ├── atividades.routes.js
 │   │   ├── auth.routes.js
+│   │   ├── avisos.routes.js
 │   │   ├── cursos.routes.js
 │   │   ├── disciplinas.routes.js
+│   │   ├── enviosAtividades.routes.js
+│   │   ├── materiais.routes.js
+│   │   ├── matriculas.routes.js
+│   │   ├── notas.routes.js
 │   │   ├── professores.routes.js
 │   │   └── turmas.routes.js
 │   │
 │   └── utils/
+│       ├── mapeadores.js
+│       ├── senhas.js
+│       ├── tokens.js
 │       └── validacoes.js
 │
 ├── package.json
@@ -247,11 +265,21 @@ Exemplos:
 /cursos
 /disciplinas
 /turmas
+/matriculas
+/materiais
+/atividades
+/envios-atividades
+/notas
+/avisos
 ```
+
+### `src/database/conexao.js`
+
+Contém o pool de conexão com MySQL e helpers para executar queries e transações.
 
 ### `src/database/memoria.js`
 
-Contém os dados temporários usados pelo sistema enquanto ainda não há banco de dados integrado.
+Arquivo legado mantido apenas como referência da primeira versão em memória. A API principal usa o banco MySQL.
 
 ### `src/middlewares/`
 
@@ -291,7 +319,15 @@ Na raiz do projeto, crie um arquivo chamado `.env` com:
 
 ```env
 PORT=3000
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=sua_senha
+DB_NAME=escola_ead
+TOKEN_SECRET=troque-este-segredo
 ```
+
+Antes de iniciar a API, execute o script `database/DB.sql` no MySQL para criar o banco `escola_ead` e suas tabelas.
 
 ### 3. Iniciar o servidor
 
@@ -299,10 +335,16 @@ PORT=3000
 npm start
 ```
 
-Ou, se estiver usando o script de desenvolvimento:
+Ou:
 
 ```bash
 npm run dev
+```
+
+Atualmente, os dois comandos executam o mesmo arquivo:
+
+```bash
+node src/server.js
 ```
 
 Se tudo estiver correto, o terminal deverá mostrar algo parecido com:
@@ -315,11 +357,12 @@ Servidor rodando em http://localhost:3000
 
 ## Usuário inicial para testes
 
-Existe um usuário administrador inicial para testar o login da API:
+O arquivo `database/DB.sql` cria um usuário administrador inicial para testar o login da API:
 
 ```json
 {
   "login": "admin",
+  "email": "admin@portal.local",
   "senha": "123456"
 }
 ```
@@ -365,6 +408,15 @@ Esse token deve ser enviado nas rotas protegidas pelo cabeçalho:
 ```txt
 Authorization: Bearer SEU_TOKEN_AQUI
 ```
+
+No frontend, o arquivo `public/js/auth.js` salva o token e os dados do usuário no `localStorage` após o login:
+
+```txt
+token
+usuario
+```
+
+Esse armazenamento permite manter a sessão no navegador e usar as informações do usuário nas telas do sistema.
 
 ---
 
@@ -412,7 +464,61 @@ GET  /turmas
 POST /turmas
 ```
 
-As rotas de alunos, professores, cursos, disciplinas e turmas exigem autenticação.
+### Matrículas
+
+```txt
+GET  /matriculas
+POST /matriculas
+```
+
+Usada para vincular alunos às turmas.
+
+### Materiais
+
+```txt
+GET  /materiais
+POST /materiais
+```
+
+Usada para cadastrar e listar materiais didáticos de uma turma.
+
+### Atividades
+
+```txt
+GET  /atividades
+POST /atividades
+```
+
+Usada para cadastrar e listar atividades criadas por professores.
+
+### Envios de atividades
+
+```txt
+GET  /envios-atividades
+POST /envios-atividades
+```
+
+Usada para registrar e listar entregas de atividades feitas pelos alunos.
+
+### Notas
+
+```txt
+GET  /notas
+POST /notas
+```
+
+Usada para lançar e listar notas de atividades.
+
+### Avisos
+
+```txt
+GET  /avisos
+POST /avisos
+```
+
+Usada para publicar e listar avisos de uma turma.
+
+As rotas de alunos, professores, cursos, disciplinas, turmas, matrículas, materiais, atividades, envios, notas e avisos exigem autenticação.
 
 ---
 
@@ -532,19 +638,24 @@ Por isso, ao testar apenas o frontend, é recomendado rodar o projeto por um ser
 
 Neste momento, o frontend serve principalmente como protótipo visual e estrutural do portal.
 
-Algumas chamadas JavaScript já apontam para rotas de API, mas a integração final entre telas, formulários, autenticação, permissões e dados reais ainda precisa ser revisada.
+O login já chama a rota real `/auth/login` e salva o token no navegador. As demais telas ainda são majoritariamente visuais: os formulários exibem ações simuladas e ainda precisam ser conectados às rotas reais da API.
 
-Essa integração será uma etapa futura do projeto.
+A integração final entre painéis, formulários, permissões e dados reais ainda precisa ser revisada.
 
 ---
 
-## Observação sobre armazenamento em memória
+## Observação sobre o banco de dados
 
-Os dados atuais ficam salvos apenas enquanto o servidor está rodando.
+O backend principal usa MySQL por meio do arquivo `src/database/conexao.js`.
 
-Se o servidor for encerrado, os dados cadastrados são perdidos.
+O schema de referência fica em `database/DB.sql` e foi organizado para atender aos fluxos dos diagramas de atividades e classes:
 
-Isso acontece porque a versão atual ainda usa armazenamento em memória. O arquivo `database/DB.sql` serve como referência inicial para a futura integração com banco de dados.
+- cadastro e login de usuários;
+- alunos, professores, administradores e coordenadores;
+- cursos, disciplinas, turmas e matrículas;
+- materiais didáticos, atividades, envios, notas e avisos.
+
+As senhas cadastradas pela API são gravadas com hash. O login ainda aceita senhas antigas em texto puro para facilitar migração de dados de teste.
 
 ---
 
@@ -563,13 +674,10 @@ Isso acontece porque a versão atual ainda usa armazenamento em memória. O arqu
 
 ## Próximos passos sugeridos
 
-- Servir oficialmente a pasta `public` pelo Express;
-- alinhar as rotas chamadas pelo frontend com as rotas existentes no backend;
-- integrar o login visual com o login real da API;
-- salvar o token no navegador após login;
+- conectar os formulários administrativos às rotas reais da API;
+- carregar dados reais nos painéis de aluno, professor e administrador;
 - proteger páginas por perfil de usuário;
-- conectar formulários administrativos às rotas reais;
-- criar rotas para conteúdos, atividades e notas;
-- integrar o projeto ao banco de dados;
 - adicionar edição e exclusão de registros;
-- melhorar validações e mensagens de erro.
+- melhorar validações e mensagens de erro;
+- implementar upload real de arquivos;
+- criar permissões detalhadas por perfil.

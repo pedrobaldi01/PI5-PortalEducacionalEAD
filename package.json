@@ -1,7 +1,7 @@
 {
   "name": "backend-ead-login-sem-avisos",
   "version": "1.0.0",
-  "description": "Back-end simples para sistema EAD com login e armazenamento em memoria.",
+  "description": "Back-end simples para sistema EAD com login e persistência em banco MySQL.",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "express": "^5.0.0"
+    "express": "^5.0.0",
+    "mysql2": "^3.14.1"
   }
 }

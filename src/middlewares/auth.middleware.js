@@ -1,43 +1,57 @@
-const { memoria } = require('../database/memoria');
+const { executar } = require('../database/conexao');
+const { validarToken } = require('../utils/tokens');
 
-function autenticar(req, res, next) {
-  const authorization = req.headers.authorization;
+async function autenticar(req, res, next) {
+  try {
+    const authorization = req.headers.authorization;
 
-  if (!authorization) {
-    return res.status(401).json({
-      erro: 'Token não informado. Faça login primeiro.'
-    });
+    if (!authorization) {
+      return res.status(401).json({
+        erro: 'Token não informado. Faça login primeiro.'
+      });
+    }
+
+    const partes = authorization.split(' ');
+    const tipo = partes[0];
+    const token = partes[1];
+
+    if (tipo !== 'Bearer' || !token) {
+      return res.status(401).json({
+        erro: 'Formato do token inválido. Use: Authorization: Bearer SEU_TOKEN'
+      });
+    }
+
+    const dadosToken = validarToken(token);
+
+    if (!dadosToken) {
+      return res.status(401).json({
+        erro: 'Token inválido ou expirado.'
+      });
+    }
+
+    const usuarios = await executar(
+      `SELECT usuario_id, nome, cpf, data_nascimento, email, telefone,
+              endereco, login, tipo, status, data_cadastro
+         FROM Usuario
+        WHERE usuario_id = ?
+        LIMIT 1`,
+      [dadosToken.usuarioId]
+    );
+
+    const usuario = usuarios[0];
+
+    if (!usuario || usuario.status !== 'Ativo') {
+      return res.status(401).json({
+        erro: 'Usuário da sessão não encontrado ou inativo.'
+      });
+    }
+
+    req.usuario = usuario;
+
+    return next();
+  } catch (erro) {
+    return next(erro);
   }
-
-  const partes = authorization.split(' ');
-  const tipo = partes[0];
-  const token = partes[1];
-
-  if (tipo !== 'Bearer' || !token) {
-    return res.status(401).json({
-      erro: 'Formato do token inválido. Use: Authorization: Bearer SEU_TOKEN'
-    });
-  }
-
-  const sessao = memoria.sessoes.find((item) => item.token === token);
-
-  if (!sessao) {
-    return res.status(401).json({
-      erro: 'Token inválido ou expirado.'
-    });
-  }
-
-  const usuario = memoria.usuarios.find((item) => item.id === sessao.usuarioId);
-
-  if (!usuario) {
-    return res.status(401).json({
-      erro: 'Usuário da sessão não encontrado.'
-    });
-  }
-
-  req.usuario = usuario;
-
-  next();
 }
 
 module.exports = autenticar;

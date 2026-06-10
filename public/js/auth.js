@@ -19,7 +19,7 @@ function configurarLogin() {
     };
 
     try {
-      const resposta = await fetch("/api/login", {
+      const resposta = await fetch("/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -29,10 +29,13 @@ function configurarLogin() {
 
       const resultado = await resposta.json();
 
-      if (!resposta.ok || !resultado.success) {
-        mostrarErro(feedback, resultado.error || "E-mail ou senha inválidos.");
+      if (!resposta.ok) {
+        mostrarErro(feedback, resultado.erro || "E-mail ou senha inválidos.");
         return;
       }
+
+      localStorage.setItem("token", resultado.token);
+      localStorage.setItem("usuario", JSON.stringify(resultado.usuario));
 
       const tipo = resultado.usuario?.tipo;
 
