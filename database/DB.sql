@@ -229,3 +229,217 @@ INSERT IGNORE INTO Administrador (usuario_id)
 SELECT usuario_id
 FROM Usuario
 WHERE login = 'admin';
+
+
+INSERT IGNORE INTO Usuario (
+    nome,
+    email,
+    login,
+    senha,
+    tipo,
+    status
+) VALUES
+(
+    'Marcos Andre Lucas',
+    'mlucas@uricer.edu.br',
+    'marcos.lucas',
+    'scrypt:portaldevprofseed:75e442e6ec5225cf28c67211efb3edcf247ae2071df31827a8f2ac55beea0992870fda2fcf475b251bdde0b370fc66bac7d93467646eb708737ce52cc37ecf2d',
+    'Professor',
+    'Ativo'
+),
+(
+    'Daniel Menin Tortelli',
+    'danielmenintortelli@uricer.edu.br',
+    'daniel.tortelli',
+    'scrypt:portaldevprofseed:75e442e6ec5225cf28c67211efb3edcf247ae2071df31827a8f2ac55beea0992870fda2fcf475b251bdde0b370fc66bac7d93467646eb708737ce52cc37ecf2d',
+    'Professor',
+    'Ativo'
+),
+(
+    'Douglas Tagliari Dos Santos',
+    'dtagliari@uricer.edu.br',
+    'douglas.santos',
+    'scrypt:portaldevprofseed:75e442e6ec5225cf28c67211efb3edcf247ae2071df31827a8f2ac55beea0992870fda2fcf475b251bdde0b370fc66bac7d93467646eb708737ce52cc37ecf2d',
+    'Professor',
+    'Ativo'
+),
+(
+    'Malomar Alex Seminotti',
+    'malomar@uricer.edu.br',
+    'malomar.seminotti',
+    'scrypt:portaldevprofseed:75e442e6ec5225cf28c67211efb3edcf247ae2071df31827a8f2ac55beea0992870fda2fcf475b251bdde0b370fc66bac7d93467646eb708737ce52cc37ecf2d',
+    'Professor',
+    'Ativo'
+),
+(
+    'Hélio Leal Barcelos',
+    'helio.barcelos@urisantiago.br',
+    'helio.barcelos',
+    'scrypt:portaldevprofseed:75e442e6ec5225cf28c67211efb3edcf247ae2071df31827a8f2ac55beea0992870fda2fcf475b251bdde0b370fc66bac7d93467646eb708737ce52cc37ecf2d',
+    'Professor',
+    'Ativo'
+);
+
+INSERT IGNORE INTO Professor (usuario_id, especialidade)
+SELECT usuario_id, 'Computação'
+FROM Usuario
+WHERE login IN (
+    'marcos.lucas',
+    'daniel.tortelli',
+    'douglas.santos',
+    'malomar.seminotti',
+    'helio.barcelos'
+);
+
+INSERT INTO Curso (
+    nome,
+    descricao,
+    carga_horaria_total,
+    categoria,
+    status
+)
+SELECT
+    'Sistemas de Informação - 5º Semestre',
+    'Curso base para as disciplinas do quinto semestre.',
+    950,
+    'Tecnologia',
+    'Ativo'
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Curso
+    WHERE nome = 'Sistemas de Informação - 5º Semestre'
+);
+
+INSERT INTO Disciplina (
+    nome,
+    descricao,
+    carga_horaria,
+    professor_responsavel_id
+)
+SELECT
+    'Processamento de Imagens',
+    'Disciplina de processamento e análise de imagens digitais.',
+    200,
+    p.professor_id
+FROM Professor p
+JOIN Usuario u ON u.usuario_id = p.usuario_id
+WHERE u.login = 'daniel.tortelli'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM Disciplina
+      WHERE nome = 'Processamento de Imagens'
+  );
+
+INSERT INTO Disciplina (
+    nome,
+    descricao,
+    carga_horaria,
+    professor_responsavel_id
+)
+SELECT
+    'Programação Paralela e Distribuída',
+    'Disciplina de programação paralela, concorrente e distribuída.',
+    100,
+    p.professor_id
+FROM Professor p
+JOIN Usuario u ON u.usuario_id = p.usuario_id
+WHERE u.login = 'marcos.lucas'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM Disciplina
+      WHERE nome = 'Programação Paralela e Distribuída'
+  );
+
+INSERT INTO Disciplina (
+    nome,
+    descricao,
+    carga_horaria,
+    professor_responsavel_id
+)
+SELECT
+    'Programação Web',
+    'Disciplina de desenvolvimento de aplicações para a web.',
+    200,
+    p.professor_id
+FROM Professor p
+JOIN Usuario u ON u.usuario_id = p.usuario_id
+WHERE u.login = 'douglas.santos'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM Disciplina
+      WHERE nome = 'Programação Web'
+  );
+
+INSERT INTO Disciplina (
+    nome,
+    descricao,
+    carga_horaria,
+    professor_responsavel_id
+)
+SELECT
+    'Projeto Integrador V - Desenvolvimento Avançado de Aplicações',
+    'Disciplina de projeto integrador para desenvolvimento avançado de aplicações.',
+    150,
+    p.professor_id
+FROM Professor p
+JOIN Usuario u ON u.usuario_id = p.usuario_id
+WHERE u.login = 'malomar.seminotti'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM Disciplina
+      WHERE nome = 'Projeto Integrador V - Desenvolvimento Avançado de Aplicações'
+  );
+
+INSERT INTO Disciplina (
+    nome,
+    descricao,
+    carga_horaria,
+    professor_responsavel_id
+)
+SELECT
+    'Redes e Telecomunicações',
+    'Disciplina de fundamentos, protocolos e infraestrutura de redes.',
+    200,
+    p.professor_id
+FROM Professor p
+JOIN Usuario u ON u.usuario_id = p.usuario_id
+WHERE u.login = 'marcos.lucas'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM Disciplina
+      WHERE nome = 'Redes e Telecomunicações'
+  );
+
+INSERT INTO Disciplina (
+    nome,
+    descricao,
+    carga_horaria,
+    professor_responsavel_id
+)
+SELECT
+    'Tópicos Especiais em Computação I',
+    'Disciplina de tópicos especiais em computação.',
+    100,
+    p.professor_id
+FROM Professor p
+JOIN Usuario u ON u.usuario_id = p.usuario_id
+WHERE u.login = 'helio.barcelos'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM Disciplina
+      WHERE nome = 'Tópicos Especiais em Computação I'
+  );
+
+INSERT IGNORE INTO Curso_Disciplina (curso_id, disciplina_id, sequencia)
+SELECT c.curso_id, d.disciplina_id, dados.sequencia
+FROM Curso c
+CROSS JOIN (
+    SELECT 'Processamento de Imagens' AS nome, 1 AS sequencia
+    UNION ALL SELECT 'Programação Paralela e Distribuída', 2
+    UNION ALL SELECT 'Programação Web', 3
+    UNION ALL SELECT 'Projeto Integrador V - Desenvolvimento Avançado de Aplicações', 4
+    UNION ALL SELECT 'Redes e Telecomunicações', 5
+    UNION ALL SELECT 'Tópicos Especiais em Computação I', 6
+) dados
+JOIN Disciplina d ON d.nome = dados.nome
+WHERE c.nome = 'Sistemas de Informação - 5º Semestre';
