@@ -1,13 +1,11 @@
 const express = require('express');
-
-const {
-  criarDisciplina,
-  listarDisciplinas
-} = require('../controllers/disciplinas.controller');
-
+const permitir = require('../middlewares/perfil.middleware');
+const asyncHandler = require('../utils/async-handler');
+const c = require('../controllers/disciplinas.controller');
 const router = express.Router();
-
-router.get('/', listarDisciplinas);
-router.post('/', criarDisciplina);
-
+router.get('/', asyncHandler(c.listarDisciplinas));
+router.get('/:id', asyncHandler(c.buscarDisciplinaPorId));
+router.post('/', permitir('Administrador'), asyncHandler(c.criarDisciplina));
+router.put('/:id', permitir('Administrador'), asyncHandler(c.atualizarDisciplina));
+router.delete('/:id', permitir('Administrador'), asyncHandler(c.removerDisciplina));
 module.exports = router;

@@ -1,27 +1,20 @@
-
 function permitirPerfis(...perfisPermitidos) {
-  const perfisNormalizados = perfisPermitidos.map((perfil) =>
-    String(perfil).trim().toLowerCase()
+  const normalizados = perfisPermitidos.map((perfil) =>
+    String(perfil).trim().toLocaleLowerCase('pt-BR')
   );
 
   return (req, res, next) => {
     if (!req.usuario) {
-      return res.status(401).json({
-        erro: 'Usuário não autenticado.'
-      });
+      return res.status(401).json({ erro: 'Usuário não autenticado.' });
     }
 
-    const perfilUsuario = String(
-      req.usuario.tipo || req.usuario.perfil || ''
-    )
+    const perfilAtual = String(req.usuario.tipo || '')
       .trim()
-      .toLowerCase();
+      .toLocaleLowerCase('pt-BR');
 
-    if (!perfisNormalizados.includes(perfilUsuario)) {
+    if (!normalizados.includes(perfilAtual)) {
       return res.status(403).json({
-        erro: 'Você não possui permissão para realizar esta operação.',
-        perfilNecessario: perfisPermitidos,
-        seuPerfil: req.usuario.tipo || req.usuario.perfil
+        erro: 'Você não possui permissão para realizar esta operação.'
       });
     }
 

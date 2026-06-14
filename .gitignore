@@ -1,38 +1,14 @@
-# Dependencias
 node_modules/
-
-# Variaveis de ambiente locais
 .env
 .env.*
-!.env.example
-
-# Logs
 logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Arquivos gerados pelo sistema/editor
-.DS_Store
-Thumbs.db
 .vscode/
 .idea/
-.cursor/
-
-# Saidas de testes/build
 coverage/
 dist/
 build/
-
-# Banco de dados local, dumps e backups
-*.db
-*.sqlite
-*.sqlite3
-*.dump
-*.backup
-*.bak
-database/*.dump
-database/*.backup
-database/*.bak
+uploads/*
+!uploads/.gitkeep
+!uploads/private/
+!uploads/private/.gitkeep
