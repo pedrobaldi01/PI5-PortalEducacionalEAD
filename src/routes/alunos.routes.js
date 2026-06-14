@@ -5,9 +5,21 @@ const {
   listarAlunos
 } = require('../controllers/alunos.controller');
 
+const permitirPerfis = require('../middlewares/perfil.middleware');
+
 const router = express.Router();
 
-router.get('/', listarAlunos);
-router.post('/', criarAluno);
+
+router.get(
+  '/',
+  permitirPerfis('Administrador'),
+  listarAlunos
+);
+
+router.post(
+  '/',
+  permitirPerfis('Administrador'),
+  criarAluno
+);
 
 module.exports = router;
