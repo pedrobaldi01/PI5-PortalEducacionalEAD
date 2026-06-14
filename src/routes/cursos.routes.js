@@ -1,13 +1,17 @@
 const express = require('express');
-
-const {
-  criarCurso,
-  listarCursos
-} = require('../controllers/cursos.controller');
-
+const permitir = require('../middlewares/perfil.middleware');
+const asyncHandler = require('../utils/async-handler');
+const c = require('../controllers/cursos.controller');
+const cd = require('../controllers/cursoDisciplinas.controller');
 const router = express.Router();
-
-router.get('/', listarCursos);
-router.post('/', criarCurso);
-
+router.get('/', asyncHandler(c.listarCursos));
+router.get('/:cursoId/disciplinas', asyncHandler(cd.listarPorCurso));
+router.post('/:cursoId/disciplinas', permitir('Administrador'), asyncHandler(cd.adicionar));
+router.put('/:cursoId/disciplinas/:disciplinaId', permitir('Administrador'), asyncHandler(cd.atualizarSequencia));
+router.delete('/:cursoId/disciplinas/:disciplinaId', permitir('Administrador'), asyncHandler(cd.remover));
+router.get('/:id', asyncHandler(c.buscarCursoPorId));
+router.post('/', permitir('Administrador'), asyncHandler(c.criarCurso));
+router.put('/:id', permitir('Administrador'), asyncHandler(c.atualizarCurso));
+router.patch('/:id/status', permitir('Administrador'), asyncHandler(c.alterarStatus));
+router.delete('/:id', permitir('Administrador'), asyncHandler(c.removerCurso));
 module.exports = router;

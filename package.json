@@ -1,19 +1,25 @@
 {
-  "name": "backend-ead-login-sem-avisos",
-  "version": "1.0.0",
-  "description": "Back-end simples para sistema EAD com login e persistência em banco MySQL.",
+  "name": "portal-educacional-ead",
+  "version": "2.0.0",
+  "description": "Backend completo do Portal Educacional EAD.",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node src/server.js"
+    "dev": "node --watch src/server.js",
+    "test": "node --test",
+    "check": "node scripts/verificar-sintaxe.js"
   },
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^5.0.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "multer": "^2.0.2",
     "mysql2": "^3.14.1"
   }
 }

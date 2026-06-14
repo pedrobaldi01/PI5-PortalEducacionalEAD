@@ -1,13 +1,12 @@
 const express = require('express');
-
-const {
-  criarMatricula,
-  listarMatriculas
-} = require('../controllers/matriculas.controller');
-
+const permitir = require('../middlewares/perfil.middleware');
+const asyncHandler = require('../utils/async-handler');
+const c = require('../controllers/matriculas.controller');
 const router = express.Router();
-
-router.get('/', listarMatriculas);
-router.post('/', criarMatricula);
-
+router.get('/minhas', permitir('Aluno'), asyncHandler(c.listarMinhas));
+router.get('/', permitir('Administrador', 'Coordenador', 'Professor', 'Aluno'), asyncHandler(c.listarMatriculas));
+router.get('/:id', permitir('Administrador', 'Coordenador', 'Professor', 'Aluno'), asyncHandler(c.buscarMatriculaPorId));
+router.post('/', permitir('Administrador'), asyncHandler(c.criarMatricula));
+router.patch('/:id/status', permitir('Administrador'), asyncHandler(c.alterarStatus));
+router.delete('/:id', permitir('Administrador'), asyncHandler(c.removerMatricula));
 module.exports = router;

@@ -1,24 +1,12 @@
 function formatarData(valor) {
-  if (!valor) {
-    return null;
-  }
-
-  if (valor instanceof Date) {
-    return valor.toISOString().slice(0, 10);
-  }
-
-  return valor;
+  if (!valor) return null;
+  if (valor instanceof Date) return valor.toISOString().slice(0, 10);
+  return String(valor).slice(0, 10);
 }
 
 function formatarDataHora(valor) {
-  if (!valor) {
-    return null;
-  }
-
-  if (valor instanceof Date) {
-    return valor.toISOString();
-  }
-
+  if (!valor) return null;
+  if (valor instanceof Date) return valor.toISOString();
   return valor;
 }
 
@@ -35,12 +23,10 @@ function formatarUsuario(usuario) {
     tipo: usuario.tipo,
     perfil: usuario.tipo ? usuario.tipo.toLowerCase() : null,
     status: usuario.status,
+    alunoId: usuario.aluno_id || null,
+    professorId: usuario.professor_id || null,
     dataCadastro: formatarDataHora(usuario.data_cadastro)
   };
 }
 
-module.exports = {
-  formatarData,
-  formatarDataHora,
-  formatarUsuario
-};
+module.exports = { formatarData, formatarDataHora, formatarUsuario };

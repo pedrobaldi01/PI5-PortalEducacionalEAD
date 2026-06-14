@@ -1,24 +1,11 @@
 const { executar } = require('../database/conexao');
+const acesso = require('../services/acesso.service');
 const { formatarData } = require('../utils/mapeadores');
-const { numeroPositivo } = require('../utils/validacoes');
+const { normalizarStatus } = require('../utils/validacoes');
+const AppError = require('../utils/app-error');
+const { obterId } = require('../utils/controller-helpers');
 
-const STATUS_MATRICULA = {
-  ativa: 'Ativa',
-  trancada: 'Trancada',
-  cancelada: 'Cancelada',
-  concluida: 'Concluída',
-  'concluída': 'Concluída'
-};
-
-function normalizarStatus(status) {
-  if (!status) {
-    return 'Ativa';
-  }
-
-  return STATUS_MATRICULA[String(status).trim().toLowerCase()] || null;
-}
-
-function formatarMatricula(linha) {
+function formatar(linha) {
   return {
     id: linha.matricula_id,
     alunoId: linha.aluno_id,
@@ -30,88 +17,99 @@ function formatarMatricula(linha) {
   };
 }
 
-async function criarMatricula(req, res, next) {
-  try {
-    const { alunoId, turmaId, dataMatricula, status } = req.body;
+const selectBase = `
+  SELECT m.*, u.nome AS aluno, t.nome AS turma
+    FROM Matricula m
+    JOIN Aluno a ON a.aluno_id = m.aluno_id
+    JOIN Usuario u ON u.usuario_id = a.usuario_id
+    JOIN Turma t ON t.turma_id = m.turma_id
+`;
 
-    if (!numeroPositivo(alunoId) || !numeroPositivo(turmaId)) {
-      return res.status(400).json({
-        erro: 'Campos obrigatórios: alunoId e turmaId.'
-      });
-    }
-
-    const statusBanco = normalizarStatus(status);
-
-    if (!statusBanco) {
-      return res.status(400).json({
-        erro: 'Status inválido. Use Ativa, Trancada, Cancelada ou Concluída.'
-      });
-    }
-
-    const alunos = await executar(
-      'SELECT aluno_id FROM Aluno WHERE aluno_id = ? LIMIT 1',
-      [Number(alunoId)]
-    );
-    const turmas = await executar(
-      'SELECT turma_id FROM Turma WHERE turma_id = ? LIMIT 1',
-      [Number(turmaId)]
-    );
-
-    if (alunos.length === 0 || turmas.length === 0) {
-      return res.status(400).json({
-        erro: 'alunoId ou turmaId informado não existe.'
-      });
-    }
-
-    const resultado = await executar(
-      `INSERT INTO Matricula (aluno_id, turma_id, data_matricula, status_matricula)
-       VALUES (?, ?, COALESCE(?, CURRENT_DATE), ?)`,
-      [Number(alunoId), Number(turmaId), dataMatricula || null, statusBanco]
-    );
-
-    return res.status(201).json({
-      mensagem: 'Matrícula criada com sucesso.',
-      dados: {
-        id: resultado.insertId,
-        alunoId: Number(alunoId),
-        turmaId: Number(turmaId),
-        dataMatricula: dataMatricula || null,
-        status: statusBanco
-      }
-    });
-  } catch (erro) {
-    if (erro.code === 'ER_DUP_ENTRY') {
-      return res.status(400).json({
-        erro: 'Este aluno já está matriculado nesta turma.'
-      });
-    }
-
-    return next(erro);
-  }
+async function buscarRegistro(id) {
+  const linhas = await executar(`${selectBase} WHERE m.matricula_id = ? LIMIT 1`, [id]);
+  if (!linhas[0]) throw new AppError(404, 'Matrícula não encontrada.');
+  return linhas[0];
 }
 
-async function listarMatriculas(req, res, next) {
-  try {
-    const matriculas = await executar(
-      `SELECT m.matricula_id, m.aluno_id, aluno_usuario.nome AS aluno,
-              m.turma_id, t.nome AS turma, m.data_matricula, m.status_matricula
-         FROM Matricula m
-         JOIN Aluno a ON a.aluno_id = m.aluno_id
-         JOIN Usuario aluno_usuario ON aluno_usuario.usuario_id = a.usuario_id
-         JOIN Turma t ON t.turma_id = m.turma_id
-        ORDER BY t.nome, aluno_usuario.nome`
-    );
+async function listarMatriculas(req, res) {
+  let sql = selectBase;
+  const params = [];
 
-    return res.status(200).json({
-      total: matriculas.length,
-      dados: matriculas.map(formatarMatricula)
-    });
-  } catch (erro) {
-    return next(erro);
+  if (acesso.ehAluno(req.usuario)) {
+    sql += ' WHERE m.aluno_id = ?'; params.push(req.usuario.aluno_id);
+  } else if (acesso.ehProfessor(req.usuario)) {
+    sql += ' WHERE t.professor_id = ?'; params.push(req.usuario.professor_id);
   }
+
+  sql += ' ORDER BY m.data_matricula DESC';
+  const linhas = await executar(sql, params);
+  return res.status(200).json({ total: linhas.length, dados: linhas.map(formatar) });
+}
+
+async function listarMinhas(req, res) {
+  if (!acesso.ehAluno(req.usuario)) acesso.negar();
+  return listarMatriculas(req, res);
+}
+
+async function buscarMatriculaPorId(req, res) {
+  const registro = await buscarRegistro(obterId(req.params.id));
+  if (acesso.ehAluno(req.usuario) && Number(registro.aluno_id) !== Number(req.usuario.aluno_id)) acesso.negar();
+  if (acesso.ehProfessor(req.usuario) && !(await acesso.professorGerenciaTurma(req.usuario, registro.turma_id))) acesso.negar();
+  return res.status(200).json({ dados: formatar(registro) });
+}
+
+async function criarMatricula(req, res) {
+  const alunoId = obterId(req.body.alunoId, 'alunoId');
+  const turmaId = obterId(req.body.turmaId, 'turmaId');
+  const status = normalizarStatus(req.body.status || 'Ativa', ['Ativa', 'Trancada', 'Cancelada', 'Concluída']);
+  if (!status) throw new AppError(400, 'Status da matrícula inválido.');
+
+  const [alunos, turmas] = await Promise.all([
+    executar("SELECT a.aluno_id FROM Aluno a JOIN Usuario u ON u.usuario_id = a.usuario_id WHERE a.aluno_id = ? AND u.status = 'Ativo' LIMIT 1", [alunoId]),
+    executar('SELECT turma_id FROM Turma WHERE turma_id = ? LIMIT 1', [turmaId])
+  ]);
+  if (!alunos.length) throw new AppError(400, 'Aluno não encontrado ou inativo.');
+  if (!turmas.length) throw new AppError(400, 'Turma não encontrada.');
+
+  const resultado = await executar(
+    'INSERT INTO Matricula (aluno_id, turma_id, status_matricula) VALUES (?, ?, ?)',
+    [alunoId, turmaId, status]
+  );
+  return res.status(201).json({ mensagem: 'Matrícula criada com sucesso.', dados: formatar(await buscarRegistro(resultado.insertId)) });
+}
+
+async function alterarStatus(req, res) {
+  const id = obterId(req.params.id);
+  await buscarRegistro(id);
+  const status = normalizarStatus(req.body.status, ['Ativa', 'Trancada', 'Cancelada', 'Concluída']);
+  if (!status) throw new AppError(400, 'Status da matrícula inválido.');
+  await executar('UPDATE Matricula SET status_matricula = ? WHERE matricula_id = ?', [status, id]);
+  return res.status(200).json({ mensagem: 'Status da matrícula atualizado.', dados: formatar(await buscarRegistro(id)) });
+}
+
+async function removerMatricula(req, res) {
+  const id = obterId(req.params.id);
+  await buscarRegistro(id);
+  await executar('DELETE FROM Matricula WHERE matricula_id = ?', [id]);
+  return res.status(204).send();
+}
+
+async function listarAlunosDaTurma(req, res) {
+  const turmaId = obterId(req.params.turmaId, 'turmaId');
+  await acesso.exigirVisualizacaoTurma(req.usuario, turmaId);
+  const linhas = await executar(
+    `${selectBase} WHERE m.turma_id = ? ORDER BY u.nome`,
+    [turmaId]
+  );
+  return res.status(200).json({ total: linhas.length, dados: linhas.map(formatar) });
 }
 
 module.exports = {
+  listarMatriculas,
+  listarMinhas,
+  buscarMatriculaPorId,
   criarMatricula,
-  listarMatriculas
+  alterarStatus,
+  removerMatricula,
+  listarAlunosDaTurma
 };

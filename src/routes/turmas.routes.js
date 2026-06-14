@@ -1,13 +1,20 @@
 const express = require('express');
-
-const {
-  criarTurma,
-  listarTurmas
-} = require('../controllers/turmas.controller');
-
+const permitir = require('../middlewares/perfil.middleware');
+const asyncHandler = require('../utils/async-handler');
+const c = require('../controllers/turmas.controller');
+const matriculas = require('../controllers/matriculas.controller');
+const materiais = require('../controllers/materiais.controller');
+const atividades = require('../controllers/atividades.controller');
+const avisos = require('../controllers/avisos.controller');
 const router = express.Router();
-
-router.get('/', listarTurmas);
-router.post('/', criarTurma);
-
+router.get('/minhas', permitir('Professor', 'Aluno'), asyncHandler(c.listarMinhasTurmas));
+router.get('/:turmaId/alunos', permitir('Administrador', 'Coordenador', 'Professor'), asyncHandler(matriculas.listarAlunosDaTurma));
+router.get('/:turmaId/materiais', asyncHandler(materiais.listarPorTurma));
+router.get('/:turmaId/atividades', asyncHandler(atividades.listarPorTurma));
+router.get('/:turmaId/avisos', asyncHandler(avisos.listarPorTurma));
+router.get('/', asyncHandler(c.listarTurmas));
+router.get('/:id', asyncHandler(c.buscarTurmaPorId));
+router.post('/', permitir('Administrador'), asyncHandler(c.criarTurma));
+router.put('/:id', permitir('Administrador'), asyncHandler(c.atualizarTurma));
+router.delete('/:id', permitir('Administrador'), asyncHandler(c.removerTurma));
 module.exports = router;

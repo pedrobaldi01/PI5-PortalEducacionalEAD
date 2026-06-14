@@ -1,13 +1,11 @@
 const express = require('express');
-
-const {
-  criarAviso,
-  listarAvisos
-} = require('../controllers/avisos.controller');
-
+const permitir = require('../middlewares/perfil.middleware');
+const asyncHandler = require('../utils/async-handler');
+const c = require('../controllers/avisos.controller');
 const router = express.Router();
-
-router.get('/', listarAvisos);
-router.post('/', criarAviso);
-
+router.get('/', asyncHandler(c.listarAvisos));
+router.get('/:id', asyncHandler(c.buscarAvisoPorId));
+router.post('/', permitir('Administrador', 'Coordenador', 'Professor'), asyncHandler(c.criarAviso));
+router.put('/:id', permitir('Administrador', 'Coordenador', 'Professor'), asyncHandler(c.atualizarAviso));
+router.delete('/:id', permitir('Administrador', 'Coordenador', 'Professor'), asyncHandler(c.removerAviso));
 module.exports = router;

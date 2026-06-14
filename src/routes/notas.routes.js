@@ -1,13 +1,11 @@
 const express = require('express');
-
-const {
-  lancarNota,
-  listarNotas
-} = require('../controllers/notas.controller');
-
+const permitir = require('../middlewares/perfil.middleware');
+const asyncHandler = require('../utils/async-handler');
+const c = require('../controllers/notas.controller');
 const router = express.Router();
-
-router.get('/', listarNotas);
-router.post('/', lancarNota);
-
+router.get('/minhas', permitir('Aluno'), asyncHandler(c.listarMinhas));
+router.get('/', permitir('Administrador', 'Coordenador', 'Professor', 'Aluno'), asyncHandler(c.listarNotas));
+router.get('/:id', permitir('Administrador', 'Coordenador', 'Professor', 'Aluno'), asyncHandler(c.buscarNotaPorId));
+router.post('/', permitir('Administrador', 'Professor'), asyncHandler(c.lancarNota));
+router.put('/:id', permitir('Administrador', 'Professor'), asyncHandler(c.atualizarNota));
 module.exports = router;

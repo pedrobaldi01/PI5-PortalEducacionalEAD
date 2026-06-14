@@ -1,13 +1,11 @@
 const express = require('express');
-
-const {
-  criarMaterial,
-  listarMateriais
-} = require('../controllers/materiais.controller');
-
+const permitir = require('../middlewares/perfil.middleware');
+const asyncHandler = require('../utils/async-handler');
+const c = require('../controllers/materiais.controller');
 const router = express.Router();
-
-router.get('/', listarMateriais);
-router.post('/', criarMaterial);
-
+router.get('/', asyncHandler(c.listarMateriais));
+router.get('/:id', asyncHandler(c.buscarMaterialPorId));
+router.post('/', permitir('Administrador', 'Professor'), asyncHandler(c.criarMaterial));
+router.put('/:id', permitir('Administrador', 'Professor'), asyncHandler(c.atualizarMaterial));
+router.delete('/:id', permitir('Administrador', 'Professor'), asyncHandler(c.removerMaterial));
 module.exports = router;

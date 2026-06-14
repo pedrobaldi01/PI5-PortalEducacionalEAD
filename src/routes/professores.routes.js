@@ -1,13 +1,12 @@
 const express = require('express');
-
-const {
-  criarProfessor,
-  listarProfessores
-} = require('../controllers/professores.controller');
-
+const permitir = require('../middlewares/perfil.middleware');
+const asyncHandler = require('../utils/async-handler');
+const c = require('../controllers/professores.controller');
 const router = express.Router();
-
-router.get('/', listarProfessores);
-router.post('/', criarProfessor);
-
+router.get('/me', permitir('Professor'), asyncHandler(c.buscarMeuPerfil));
+router.get('/', permitir('Administrador', 'Coordenador'), asyncHandler(c.listarProfessores));
+router.get('/:id', permitir('Administrador', 'Coordenador'), asyncHandler(c.buscarProfessorPorId));
+router.post('/', permitir('Administrador'), asyncHandler(c.criarProfessor));
+router.put('/:id', permitir('Administrador'), asyncHandler(c.atualizarProfessor));
+router.delete('/:id', permitir('Administrador'), asyncHandler(c.removerProfessor));
 module.exports = router;

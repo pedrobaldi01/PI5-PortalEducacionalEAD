@@ -1,21 +1,30 @@
-require('dotenv').config();
-
 const mysql = require('mysql2/promise');
+const env = require('../config/env');
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT || 3306),
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'escola_ead',
+  host: env.db.host,
+  port: env.db.port,
+  user: env.db.user,
+  password: env.db.password,
+  database: env.db.database,
   waitForConnections: true,
-  connectionLimit: Number(process.env.DB_CONNECTION_LIMIT || 10),
-  queueLimit: 0
+  connectionLimit: env.db.connectionLimit,
+  queueLimit: 0,
+  charset: 'utf8mb4'
 });
 
-async function executar(sql, parametros = []) {
-  const [resultado] = await pool.execute(sql, parametros);
+async function executar(sql, parametros = [], conexao = null) {
+  const executor = conexao || pool;
+  const [resultado] = await executor.execute(sql, parametros);
   return resultado;
+}
+
+async function testarConexao() {
+  const [linhas] = await pool.query(
+    'SELECT DATABASE() AS banco, NOW() AS dataHoraBanco'
+  );
+
+  return linhas[0];
 }
 
 async function transacao(callback) {
@@ -34,8 +43,14 @@ async function transacao(callback) {
   }
 }
 
+async function encerrarPool() {
+  await pool.end();
+}
+
 module.exports = {
-  executar,
   pool,
-  transacao
+  executar,
+  testarConexao,
+  transacao,
+  encerrarPool
 };

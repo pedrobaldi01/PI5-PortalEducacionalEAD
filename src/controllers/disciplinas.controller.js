@@ -1,144 +1,103 @@
-const { executar, transacao } = require('../database/conexao');
-const { textoValido, numeroPositivo } = require('../utils/validacoes');
+const { executar } = require('../database/conexao');
+const { textoValido, inteiroPositivo, exigirCampos } = require('../utils/validacoes');
+const AppError = require('../utils/app-error');
+const { obterId } = require('../utils/controller-helpers');
 
-function formatarDisciplina(linha) {
+function formatar(linha) {
   return {
     id: linha.disciplina_id,
     nome: linha.nome,
     descricao: linha.descricao,
     cargaHoraria: linha.carga_horaria,
     professorResponsavelId: linha.professor_responsavel_id,
-    professorResponsavel: linha.professor_responsavel,
-    cursos: linha.cursos ? linha.cursos.split(',').map((curso) => curso.trim()) : []
+    professorResponsavel: linha.professor_responsavel
   };
 }
 
-function erroValidacao(mensagem) {
-  const erro = new Error(mensagem);
-  erro.statusCode = 400;
-  return erro;
+const selectBase = `
+  SELECT d.*, u.nome AS professor_responsavel
+    FROM Disciplina d
+    JOIN Professor p ON p.professor_id = d.professor_responsavel_id
+    JOIN Usuario u ON u.usuario_id = p.usuario_id
+`;
+
+async function buscarRegistro(id) {
+  const linhas = await executar(`${selectBase} WHERE d.disciplina_id = ? LIMIT 1`, [id]);
+  if (!linhas[0]) throw new AppError(404, 'Disciplina não encontrada.');
+  return linhas[0];
 }
 
-async function criarDisciplina(req, res, next) {
-  try {
-    const {
-      nome,
-      descricao,
-      cargaHoraria,
-      professorResponsavelId,
-      cursoId,
-      sequencia
-    } = req.body;
+async function validarProfessor(id) {
+  const linhas = await executar(
+    `SELECT p.professor_id
+       FROM Professor p
+       JOIN Usuario u ON u.usuario_id = p.usuario_id
+      WHERE p.professor_id = ? AND u.status = 'Ativo'
+      LIMIT 1`,
+    [id]
+  );
+  if (!linhas.length) throw new AppError(400, 'Professor responsável não existe ou está inativo.');
+}
 
-    const professorIdNumero = Number(professorResponsavelId);
-    const cursoIdNumero = cursoId === undefined ? null : Number(cursoId);
-    const sequenciaNumero = sequencia === undefined ? null : Number(sequencia);
+async function listarDisciplinas(_req, res) {
+  const linhas = await executar(`${selectBase} ORDER BY d.nome`);
+  return res.status(200).json({ total: linhas.length, dados: linhas.map(formatar) });
+}
 
-    if (
-      !textoValido(nome) ||
-      !textoValido(descricao) ||
-      !numeroPositivo(cargaHoraria) ||
-      !numeroPositivo(professorResponsavelId)
-    ) {
-      return res.status(400).json({
-        erro: 'Campos obrigatórios: nome, descricao, cargaHoraria e professorResponsavelId.'
-      });
-    }
+async function buscarDisciplinaPorId(req, res) {
+  return res.status(200).json({ dados: formatar(await buscarRegistro(obterId(req.params.id))) });
+}
 
-    if ((cursoId !== undefined || sequencia !== undefined) && (!numeroPositivo(cursoId) || !numeroPositivo(sequencia))) {
-      return res.status(400).json({
-        erro: 'Para vincular disciplina a curso, informe cursoId e sequencia positivos.'
-      });
-    }
+async function criarDisciplina(req, res) {
+  const faltantes = exigirCampos(req.body, ['nome', 'descricao', 'cargaHoraria', 'professorResponsavelId']);
+  if (faltantes.length) throw new AppError(400, `Campos obrigatórios: ${faltantes.join(', ')}.`);
+  if (!inteiroPositivo(req.body.cargaHoraria)) throw new AppError(400, 'Carga horária inválida.');
+  const professorId = obterId(req.body.professorResponsavelId, 'professorResponsavelId');
+  await validarProfessor(professorId);
 
-    const disciplinaCriada = await transacao(async (conexao) => {
-      const [professores] = await conexao.execute(
-        'SELECT professor_id FROM Professor WHERE professor_id = ? LIMIT 1',
-        [professorIdNumero]
-      );
+  const resultado = await executar(
+    `INSERT INTO Disciplina (nome, descricao, carga_horaria, professor_responsavel_id)
+     VALUES (?, ?, ?, ?)`,
+    [req.body.nome.trim(), req.body.descricao.trim(), Number(req.body.cargaHoraria), professorId]
+  );
 
-      if (professores.length === 0) {
-        throw erroValidacao('professorResponsavelId informado não existe.');
-      }
+  return res.status(201).json({ mensagem: 'Disciplina criada com sucesso.', dados: formatar(await buscarRegistro(resultado.insertId)) });
+}
 
-      if (cursoIdNumero !== null) {
-        const [cursos] = await conexao.execute(
-          'SELECT curso_id FROM Curso WHERE curso_id = ? LIMIT 1',
-          [cursoIdNumero]
-        );
+async function atualizarDisciplina(req, res) {
+  const id = obterId(req.params.id);
+  await buscarRegistro(id);
+  const partes = [];
+  const valores = [];
 
-        if (cursos.length === 0) {
-          throw erroValidacao('cursoId informado não existe.');
-        }
-      }
-
-      const [resultado] = await conexao.execute(
-        `INSERT INTO Disciplina
-          (nome, descricao, carga_horaria, professor_responsavel_id)
-         VALUES (?, ?, ?, ?)`,
-        [nome.trim(), descricao.trim(), Number(cargaHoraria), professorIdNumero]
-      );
-
-      const disciplinaId = resultado.insertId;
-
-      if (cursoIdNumero !== null) {
-        await conexao.execute(
-          `INSERT INTO Curso_Disciplina (curso_id, disciplina_id, sequencia)
-           VALUES (?, ?, ?)`,
-          [cursoIdNumero, disciplinaId, sequenciaNumero]
-        );
-      }
-
-      return {
-        disciplina_id: disciplinaId,
-        nome: nome.trim(),
-        descricao: descricao.trim(),
-        carga_horaria: Number(cargaHoraria),
-        professor_responsavel_id: professorIdNumero,
-        professor_responsavel: null,
-        cursos: ''
-      };
-    });
-
-    return res.status(201).json({
-      mensagem: 'Disciplina criada com sucesso.',
-      dados: formatarDisciplina(disciplinaCriada)
-    });
-  } catch (erro) {
-    if (erro.statusCode) {
-      return res.status(erro.statusCode).json({ erro: erro.message });
-    }
-
-    return next(erro);
+  if (Object.hasOwn(req.body, 'nome')) {
+    if (!textoValido(req.body.nome)) throw new AppError(400, 'Nome inválido.');
+    partes.push('nome = ?'); valores.push(req.body.nome.trim());
   }
-}
-
-async function listarDisciplinas(req, res, next) {
-  try {
-    const disciplinas = await executar(
-      `SELECT d.disciplina_id, d.nome, d.descricao, d.carga_horaria,
-              d.professor_responsavel_id, u.nome AS professor_responsavel,
-              GROUP_CONCAT(c.nome ORDER BY cd.sequencia SEPARATOR ',') AS cursos
-         FROM Disciplina d
-         JOIN Professor p ON p.professor_id = d.professor_responsavel_id
-         JOIN Usuario u ON u.usuario_id = p.usuario_id
-    LEFT JOIN Curso_Disciplina cd ON cd.disciplina_id = d.disciplina_id
-    LEFT JOIN Curso c ON c.curso_id = cd.curso_id
-        GROUP BY d.disciplina_id, d.nome, d.descricao, d.carga_horaria,
-                 d.professor_responsavel_id, u.nome
-        ORDER BY d.nome`
-    );
-
-    return res.status(200).json({
-      total: disciplinas.length,
-      dados: disciplinas.map(formatarDisciplina)
-    });
-  } catch (erro) {
-    return next(erro);
+  if (Object.hasOwn(req.body, 'descricao')) {
+    partes.push('descricao = ?'); valores.push(textoValido(req.body.descricao) ? req.body.descricao.trim() : null);
   }
+  if (Object.hasOwn(req.body, 'cargaHoraria')) {
+    if (!inteiroPositivo(req.body.cargaHoraria)) throw new AppError(400, 'Carga horária inválida.');
+    partes.push('carga_horaria = ?'); valores.push(Number(req.body.cargaHoraria));
+  }
+  if (Object.hasOwn(req.body, 'professorResponsavelId')) {
+    const professorId = obterId(req.body.professorResponsavelId, 'professorResponsavelId');
+    await validarProfessor(professorId);
+    partes.push('professor_responsavel_id = ?'); valores.push(professorId);
+  }
+
+  if (!partes.length) throw new AppError(400, 'Nenhum campo reconhecido para atualização.');
+  valores.push(id);
+  await executar(`UPDATE Disciplina SET ${partes.join(', ')} WHERE disciplina_id = ?`, valores);
+  return res.status(200).json({ mensagem: 'Disciplina atualizada com sucesso.', dados: formatar(await buscarRegistro(id)) });
 }
 
-module.exports = {
-  criarDisciplina,
-  listarDisciplinas
-};
+async function removerDisciplina(req, res) {
+  const id = obterId(req.params.id);
+  await buscarRegistro(id);
+  await executar('DELETE FROM Disciplina WHERE disciplina_id = ?', [id]);
+  return res.status(204).send();
+}
+
+module.exports = { listarDisciplinas, buscarDisciplinaPorId, criarDisciplina, atualizarDisciplina, removerDisciplina };

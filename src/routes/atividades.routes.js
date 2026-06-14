@@ -1,13 +1,15 @@
 const express = require('express');
-
-const {
-  criarAtividade,
-  listarAtividades
-} = require('../controllers/atividades.controller');
-
+const permitir = require('../middlewares/perfil.middleware');
+const asyncHandler = require('../utils/async-handler');
+const c = require('../controllers/atividades.controller');
+const envios = require('../controllers/enviosAtividades.controller');
+const notas = require('../controllers/notas.controller');
 const router = express.Router();
-
-router.get('/', listarAtividades);
-router.post('/', criarAtividade);
-
+router.get('/:atividadeId/envios', permitir('Administrador', 'Professor'), asyncHandler(envios.listarPorAtividade));
+router.get('/:atividadeId/notas', permitir('Administrador', 'Professor'), asyncHandler(notas.listarPorAtividade));
+router.get('/', asyncHandler(c.listarAtividades));
+router.get('/:id', asyncHandler(c.buscarAtividadePorId));
+router.post('/', permitir('Administrador', 'Professor'), asyncHandler(c.criarAtividade));
+router.put('/:id', permitir('Administrador', 'Professor'), asyncHandler(c.atualizarAtividade));
+router.delete('/:id', permitir('Administrador', 'Professor'), asyncHandler(c.removerAtividade));
 module.exports = router;
