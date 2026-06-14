@@ -1,4 +1,4 @@
-# Portal Educacional EAD
+# Portal Educacional EAD.
 
 Projeto acadêmico de um **Portal Educacional EAD**, inspirado em plataformas como Moodle, com áreas separadas para **alunos**, **professores** e **administradores**.
 
