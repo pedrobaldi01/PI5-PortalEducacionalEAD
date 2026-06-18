@@ -6,6 +6,9 @@
     <title>Login | Portal Educacional</title>
 
     <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/api.js" defer></script>
+    <script src="js/session.js" defer></script>
+    <script src="js/ui.js" defer></script>
     <script src="js/auth.js" defer></script>
   </head>
 
@@ -22,13 +25,13 @@
 
         <form id="form-login" class="form">
           <div class="input-group">
-            <label for="email">E-mail</label>
+            <label for="login">Login ou e-mail</label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Digite seu e-mail"
-              autocomplete="email"
+              type="text"
+              id="login"
+              name="login"
+              placeholder="Digite seu login ou e-mail"
+              autocomplete="username"
               required
             />
           </div>
@@ -48,8 +51,10 @@
           <button class="button button-primary" type="submit">Entrar</button>
 
           <p id="login-feedback" class="feedback feedback-error hidden">
-            E-mail ou senha inválidos.
+            Login ou senha inválidos.
           </p>
+
+
         </form>
       </section>
     </main>

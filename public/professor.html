@@ -6,8 +6,11 @@
     <title>Painel do Professor | Portal Educacional</title>
 
     <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/api.js" defer></script>
+    <script src="js/session.js" defer></script>
+    <script src="js/ui.js" defer></script>
     <script src="js/components.js" defer></script>
-    <script src="js/app.js" defer></script>
+    <script src="js/professor.js" defer></script>
   </head>
 
   <body data-page="professor">
@@ -20,174 +23,284 @@
         <section class="page-header">
           <div>
             <p class="eyebrow">Área do professor</p>
-            <h1>Gerencie suas disciplinas</h1>
+            <h1>Gerencie suas turmas</h1>
             <p>
-              Publique conteúdos, crie atividades e lance notas para os alunos.
+              Publique conteúdos, crie atividades, acompanhe envios e lance notas usando dados reais do sistema.
             </p>
           </div>
         </section>
 
-        <section class="summary-grid">
-          <article class="summary-card">
-            <span class="summary-label">Disciplinas</span>
-            <strong>3</strong>
-            <p>vinculadas ao professor</p>
-          </article>
-
-          <article class="summary-card">
-            <span class="summary-label">Turmas</span>
-            <strong>2</strong>
-            <p>turmas em andamento</p>
-          </article>
-
-          <article class="summary-card">
-            <span class="summary-label">Atividades</span>
-            <strong>6</strong>
-            <p>publicadas no mês</p>
-          </article>
-
-          <article class="summary-card">
-            <span class="summary-label">Notas</span>
-            <strong>18</strong>
-            <p>lançamentos pendentes</p>
-          </article>
-        </section>
+        <section class="summary-grid" id="resumo-professor"></section>
 
         <section class="dashboard-grid">
-          <article class="panel" id="disciplinas">
+          <article class="panel panel-wide" id="disciplinas">
             <div class="panel-header">
-              <h2>Minhas disciplinas</h2>
+              <div>
+                <h2>Minhas turmas e disciplinas</h2>
+                <p class="panel-subtitle">Turmas vinculadas ao professor logado.</p>
+              </div>
             </div>
-
-            <div class="course-list">
-              <article class="course-card">
-                <div>
-                  <h3>Programação Web</h3>
-                  <p>Turma: 2º Info A • 28 alunos</p>
-                </div>
-                <button class="button button-secondary" type="button">
-                  Gerenciar
-                </button>
-              </article>
-
-              <article class="course-card">
-                <div>
-                  <h3>Projeto Integrador</h3>
-                  <p>Turma: 3º Info A • 24 alunos</p>
-                </div>
-                <button class="button button-secondary" type="button">
-                  Gerenciar
-                </button>
-              </article>
-            </div>
+            <div id="turmas-professor-lista"></div>
           </article>
 
           <article class="panel" id="conteudos">
             <div class="panel-header">
-              <h2>Novo conteúdo</h2>
+              <div>
+                <h2>Publicar conteúdo</h2>
+                <p class="panel-subtitle">Publique um material com link ou arquivo já enviado.</p>
+              </div>
             </div>
 
-            <form class="form">
+            <form id="form-material" class="form">
               <div class="input-group">
-                <label for="conteudoDisciplina">Disciplina</label>
-                <select id="conteudoDisciplina" name="conteudoDisciplina">
-                  <option>Programação Web</option>
-                  <option>Projeto Integrador</option>
+                <label for="materialTurma">Turma</label>
+                <select id="materialTurma" name="turmaId" required>
+                  <option value="">Carregando turmas...</option>
                 </select>
               </div>
 
               <div class="input-group">
-                <label for="tituloConteudo">Título</label>
+                <label for="materialTitulo">Título</label>
                 <input
                   type="text"
-                  id="tituloConteudo"
-                  name="tituloConteudo"
+                  id="materialTitulo"
+                  name="titulo"
                   placeholder="Ex: Aula 05 — JavaScript básico"
+                  required
                 />
               </div>
 
               <div class="input-group">
-                <label for="descricaoConteudo">Descrição</label>
+                <label for="materialDescricao">Descrição</label>
                 <textarea
-                  id="descricaoConteudo"
-                  name="descricaoConteudo"
-                  placeholder="Descreva o material ou cole um link."
+                  id="materialDescricao"
+                  name="descricao"
+                  placeholder="Descreva o material publicado."
                 ></textarea>
               </div>
 
-              <button class="button button-primary" type="submit">
-                Publicar conteúdo
-              </button>
+              <div class="input-group">
+                <label for="materialLink">Link do material</label>
+                <input
+                  type="url"
+                  id="materialLink"
+                  name="link"
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="materialArquivoId">ID do arquivo, se houver</label>
+                <input
+                  type="number"
+                  id="materialArquivoId"
+                  name="arquivoId"
+                  min="1"
+                  placeholder="Opcional"
+                />
+              </div>
+
+              <button class="button button-primary" type="submit">Publicar conteúdo</button>
+              <p id="material-feedback" class="feedback hidden"></p>
             </form>
           </article>
 
           <article class="panel" id="atividades">
             <div class="panel-header">
-              <h2>Nova atividade</h2>
+              <div>
+                <h2>Criar atividade</h2>
+                <p class="panel-subtitle">Crie uma atividade avaliativa ou não avaliativa.</p>
+              </div>
             </div>
 
-            <form class="form">
+            <form id="form-atividade" class="form">
               <div class="input-group">
-                <label for="atividadeDisciplina">Disciplina</label>
-                <select id="atividadeDisciplina" name="atividadeDisciplina">
-                  <option>Programação Web</option>
-                  <option>Projeto Integrador</option>
+                <label for="atividadeTurma">Turma</label>
+                <select id="atividadeTurma" name="turmaId" required>
+                  <option value="">Carregando turmas...</option>
                 </select>
               </div>
 
               <div class="input-group">
-                <label for="tituloAtividade">Título</label>
+                <label for="atividadeTitulo">Título</label>
                 <input
                   type="text"
-                  id="tituloAtividade"
-                  name="tituloAtividade"
+                  id="atividadeTitulo"
+                  name="titulo"
                   placeholder="Ex: Trabalho de Landing Page"
+                  required
                 />
               </div>
 
               <div class="input-group">
-                <label for="dataEntrega">Data de entrega</label>
-                <input type="date" id="dataEntrega" name="dataEntrega" />
+                <label for="atividadeDescricao">Descrição</label>
+                <textarea
+                  id="atividadeDescricao"
+                  name="descricao"
+                  placeholder="Descreva a atividade."
+                ></textarea>
               </div>
 
-              <button class="button button-primary" type="submit">
-                Criar atividade
-              </button>
+              <div class="split-grid compact-grid">
+                <div class="input-group">
+                  <label for="atividadeDataEntrega">Data e hora de entrega</label>
+                  <input
+                    type="datetime-local"
+                    id="atividadeDataEntrega"
+                    name="dataEntrega"
+                    required
+                  />
+                </div>
+
+                <div class="input-group">
+                  <label for="atividadeNotaMaxima">Nota máxima</label>
+                  <input
+                    type="number"
+                    id="atividadeNotaMaxima"
+                    name="notaMaxima"
+                    min="0.1"
+                    step="0.1"
+                    value="10"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="split-grid compact-grid">
+                <div class="input-group">
+                  <label for="atividadeStatus">Status</label>
+                  <select id="atividadeStatus" name="status">
+                    <option value="Aberta">Aberta</option>
+                    <option value="Encerrada">Encerrada</option>
+                    <option value="Cancelada">Cancelada</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <label for="atividadeAvaliativa">Tipo</label>
+                  <select id="atividadeAvaliativa" name="avaliativa">
+                    <option value="true">Avaliativa</option>
+                    <option value="false">Não avaliativa</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="button button-primary" type="submit">Criar atividade</button>
+              <p id="atividade-feedback" class="feedback hidden"></p>
             </form>
           </article>
 
-          <article class="panel" id="notas">
+          <article class="panel panel-wide" id="conteudos-listados">
             <div class="panel-header">
-              <h2>Lançar notas</h2>
+              <div>
+                <h2>Conteúdos publicados</h2>
+                <p class="panel-subtitle">Materiais já publicados nas suas turmas.</p>
+              </div>
+            </div>
+            <div id="materiais-professor-lista"></div>
+          </article>
+
+          <article class="panel panel-wide" id="atividades-listadas">
+            <div class="panel-header">
+              <div>
+                <h2>Atividades criadas</h2>
+                <p class="panel-subtitle">Atividades cadastradas para suas turmas.</p>
+              </div>
+            </div>
+            <div id="atividades-professor-lista"></div>
+          </article>
+
+          <article class="panel" id="alunos">
+            <div class="panel-header">
+              <div>
+                <h2>Alunos por turma</h2>
+                <p class="panel-subtitle">Selecione uma turma para consultar os alunos matriculados.</p>
+              </div>
             </div>
 
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Aluno</th>
-                    <th>Atividade</th>
-                    <th>Nota</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Ana Clara</td>
-                    <td>Projeto 1</td>
-                    <td><input class="table-input" type="number" value="9" /></td>
-                  </tr>
-                  <tr>
-                    <td>Bruno Souza</td>
-                    <td>Projeto 1</td>
-                    <td><input class="table-input" type="number" value="8.5" /></td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="input-group mb-16">
+              <label for="alunosTurma">Turma</label>
+              <select id="alunosTurma">
+                <option value="">Carregando turmas...</option>
+              </select>
             </div>
 
-            <button class="button button-primary mt-16" type="button">
-              Salvar notas
-            </button>
+            <div id="alunos-professor-lista"></div>
+          </article>
+
+          <article class="panel" id="envios">
+            <div class="panel-header">
+              <div>
+                <h2>Envios de atividades</h2>
+                <p class="panel-subtitle">Acompanhe os envios realizados pelos alunos.</p>
+              </div>
+            </div>
+
+            <div class="input-group mb-16">
+              <label for="enviosAtividade">Atividade</label>
+              <select id="enviosAtividade">
+                <option value="">Todas as atividades</option>
+              </select>
+            </div>
+
+            <div id="envios-professor-lista"></div>
+          </article>
+
+          <article class="panel panel-wide" id="notas">
+            <div class="panel-header">
+              <div>
+                <h2>Lançar notas</h2>
+                <p class="panel-subtitle">Selecione uma atividade, escolha o aluno e registre a nota.</p>
+              </div>
+            </div>
+
+            <form id="form-nota" class="form professor-grade-form">
+              <div class="split-grid compact-grid">
+                <div class="input-group">
+                  <label for="notaAtividade">Atividade</label>
+                  <select id="notaAtividade" name="atividadeId" required>
+                    <option value="">Carregando atividades...</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <label for="notaAluno">Aluno</label>
+                  <select id="notaAluno" name="alunoId" required>
+                    <option value="">Selecione uma atividade primeiro</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="split-grid compact-grid">
+                <div class="input-group">
+                  <label for="notaValor">Nota</label>
+                  <input
+                    type="number"
+                    id="notaValor"
+                    name="nota"
+                    min="0"
+                    step="0.1"
+                    required
+                  />
+                </div>
+
+                <div class="input-group">
+                  <label for="notaFeedback">Feedback</label>
+                  <input
+                    type="text"
+                    id="notaFeedback"
+                    name="feedback"
+                    placeholder="Comentário opcional"
+                  />
+                </div>
+              </div>
+
+              <button class="button button-primary" type="submit">Salvar nota</button>
+              <p id="nota-feedback" class="feedback hidden"></p>
+            </form>
+
+            <div class="panel-divider"></div>
+            <div id="notas-professor-lista"></div>
           </article>
         </section>
       </main>

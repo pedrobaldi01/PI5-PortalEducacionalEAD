@@ -1,14 +1,3 @@
-document.addEventListener("DOMContentLoaded", () => {
-  configurarFormulariosDemo();
-});
-
-function configurarFormulariosDemo() {
-  const forms = document.querySelectorAll("form");
-
-  forms.forEach((form) => {
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      alert("Ação simulada. Esta tela ainda precisa ser conectada ao backend.");
-    });
-  });
-}
+// app.js
+// Arquivo reservado para funções gerais de páginas sem script específico.
+// A partir da Sprint 2, cada perfil usa seu próprio arquivo: aluno.js, professor.js e admin.js.

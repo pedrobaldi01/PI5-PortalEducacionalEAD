@@ -45,11 +45,7 @@ const loginLimiter = rateLimit({
 });
 
 app.get('/', (_req, res) => {
-  res.status(200).json({
-    mensagem: 'API EAD em execução.',
-    health: '/health',
-    login: 'POST /auth/login'
-  });
+  res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
 });
 
 app.use('/health', healthRoutes);

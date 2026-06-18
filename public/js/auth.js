@@ -1,4 +1,9 @@
+/*
+  auth.js
+  Login real do frontend usando a rota POST /auth/login.
+*/
 document.addEventListener("DOMContentLoaded", () => {
+  window.UI?.exibirFlashDaSessao?.();
   configurarLogin();
 });
 
@@ -10,64 +15,51 @@ function configurarLogin() {
     return;
   }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const dados = {
-      email: form.email.value.trim(),
-      senha: form.senha.value
-    };
-
-    try {
-      const resposta = await fetch("/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dados)
-      });
-
-      const resultado = await resposta.json();
-
-      if (!resposta.ok) {
-        mostrarErro(feedback, resultado.erro || "E-mail ou senha inválidos.");
-        return;
-      }
-
-      localStorage.setItem("token", resultado.token);
-      localStorage.setItem("usuario", JSON.stringify(resultado.usuario));
-
-      const tipo = resultado.usuario?.tipo;
-
-      if (tipo === "Aluno") {
-        window.location.href = "aluno.html";
-        return;
-      }
-
-      if (tipo === "Professor") {
-        window.location.href = "professor.html";
-        return;
-      }
-
-      if (tipo === "Administrador") {
-        window.location.href = "admin.html";
-        return;
-      }
-
-      window.location.href = "aluno.html";
-    } catch (erro) {
-      console.error(erro);
-      mostrarErro(feedback, "Não foi possível conectar ao servidor.");
-    }
-  });
-}
-
-function mostrarErro(elemento, mensagem) {
-  if (!elemento) {
-    alert(mensagem);
+  if (window.Session?.usuarioEstaLogado()) {
+    window.Session.redirecionarPorPerfil();
     return;
   }
 
-  elemento.textContent = mensagem;
-  elemento.classList.remove("hidden");
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    window.UI?.limparFeedback(feedback);
+
+    const dados = {
+      login: form.login.value.trim(),
+      senha: form.senha.value
+    };
+
+    if (!dados.login || !dados.senha) {
+      window.UI?.definirFeedback(feedback, "Informe login/e-mail e senha.", "error");
+      return;
+    }
+
+    const botao = form.querySelector("button[type='submit']");
+    const textoOriginal = botao?.textContent;
+
+    try {
+      if (botao) {
+        botao.disabled = true;
+        botao.textContent = "Entrando...";
+      }
+
+      const resultado = await window.Api.post("/auth/login", dados);
+
+      window.Session.salvarSessao(resultado.usuario, resultado.token);
+      window.Session.salvarMensagemFlash("Login realizado com sucesso.", "success");
+      window.Session.redirecionarPorPerfil();
+    } catch (erro) {
+      console.error(erro);
+      window.UI?.definirFeedback(
+        feedback,
+        erro.message || "Não foi possível realizar login.",
+        "error"
+      );
+    } finally {
+      if (botao) {
+        botao.disabled = false;
+        botao.textContent = textoOriginal;
+      }
+    }
+  });
 }

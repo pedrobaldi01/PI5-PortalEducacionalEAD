@@ -6,8 +6,11 @@
     <title>Painel do Aluno | Portal Educacional</title>
 
     <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/api.js" defer></script>
+    <script src="js/session.js" defer></script>
+    <script src="js/ui.js" defer></script>
     <script src="js/components.js" defer></script>
-    <script src="js/app.js" defer></script>
+    <script src="js/aluno.js" defer></script>
   </head>
 
   <body data-page="aluno">
@@ -22,144 +25,53 @@
             <p class="eyebrow">Área do aluno</p>
             <h1>Bem-vindo ao seu painel</h1>
             <p>
-              Acompanhe suas disciplinas, conteúdos, atividades pendentes e notas.
+              Acompanhe suas turmas, disciplinas, conteúdos, atividades, avisos e notas.
             </p>
           </div>
         </section>
 
-        <section class="summary-grid">
-          <article class="summary-card">
-            <span class="summary-label">Disciplinas</span>
-            <strong>4</strong>
-            <p>disciplinas matriculadas</p>
-          </article>
-
-          <article class="summary-card">
-            <span class="summary-label">Atividades</span>
-            <strong>3</strong>
-            <p>pendentes para entrega</p>
-          </article>
-
-          <article class="summary-card">
-            <span class="summary-label">Conteúdos</span>
-            <strong>8</strong>
-            <p>materiais publicados</p>
-          </article>
-
-          <article class="summary-card">
-            <span class="summary-label">Notas</span>
-            <strong>2</strong>
-            <p>novas avaliações lançadas</p>
+        <section class="summary-grid" id="resumo-aluno" aria-label="Resumo do aluno">
+          <article class="summary-card summary-card-loading">
+            <span class="summary-label">Carregando</span>
+            <strong>...</strong>
+            <p>buscando dados do banco</p>
           </article>
         </section>
 
         <section class="dashboard-grid">
           <article class="panel" id="disciplinas">
             <div class="panel-header">
-              <h2>Minhas disciplinas</h2>
-              <a href="#disciplinas" class="link-action">Ver todas</a>
+              <h2>Minhas turmas e disciplinas</h2>
             </div>
-
-            <div class="course-list">
-              <article class="course-card">
-                <div>
-                  <h3>Programação Web</h3>
-                  <p>Professor: João Silva</p>
-                </div>
-                <span class="badge">2 atividades</span>
-              </article>
-
-              <article class="course-card">
-                <div>
-                  <h3>Banco de Dados</h3>
-                  <p>Professora: Marina Costa</p>
-                </div>
-                <span class="badge badge-soft">1 conteúdo novo</span>
-              </article>
-
-              <article class="course-card">
-                <div>
-                  <h3>Matemática Aplicada</h3>
-                  <p>Professor: Carlos Mendes</p>
-                </div>
-                <span class="badge badge-neutral">Em dia</span>
-              </article>
-            </div>
+            <div id="disciplinas-lista" class="course-list"></div>
           </article>
 
           <article class="panel" id="atividades">
             <div class="panel-header">
               <h2>Atividades próximas</h2>
-              <a href="#atividades" class="link-action">Ver calendário</a>
             </div>
-
-            <ul class="activity-list">
-              <li>
-                <div>
-                  <strong>Trabalho de HTML e CSS</strong>
-                  <span>Programação Web</span>
-                </div>
-                <time>Entrega: 25/06</time>
-              </li>
-
-              <li>
-                <div>
-                  <strong>Lista de SQL</strong>
-                  <span>Banco de Dados</span>
-                </div>
-                <time>Entrega: 28/06</time>
-              </li>
-
-              <li>
-                <div>
-                  <strong>Exercícios de Funções</strong>
-                  <span>Matemática Aplicada</span>
-                </div>
-                <time>Entrega: 30/06</time>
-              </li>
-            </ul>
+            <div id="atividades-lista"></div>
           </article>
 
           <article class="panel" id="conteudos">
             <div class="panel-header">
               <h2>Conteúdos recentes</h2>
             </div>
-
-            <ul class="simple-list">
-              <li>Aula 04 — Layouts responsivos</li>
-              <li>Material complementar — Modelo relacional</li>
-              <li>Resumo — Funções do 1º grau</li>
-            </ul>
+            <div id="conteudos-lista"></div>
           </article>
 
           <article class="panel" id="notas">
             <div class="panel-header">
               <h2>Últimas notas</h2>
             </div>
+            <div id="notas-lista"></div>
+          </article>
 
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Disciplina</th>
-                    <th>Avaliação</th>
-                    <th>Nota</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Programação Web</td>
-                    <td>Projeto 1</td>
-                    <td>9.0</td>
-                  </tr>
-                  <tr>
-                    <td>Banco de Dados</td>
-                    <td>Lista SQL</td>
-                    <td>8.5</td>
-                  </tr>
-                </tbody>
-              </table>
+          <article class="panel panel-wide" id="avisos">
+            <div class="panel-header">
+              <h2>Avisos</h2>
             </div>
+            <div id="avisos-lista"></div>
           </article>
         </section>
       </main>

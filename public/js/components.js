@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  window.UI?.exibirFlashDaSessao?.();
   carregarComponentes();
 });
 
@@ -22,6 +23,7 @@ async function carregarComponentes() {
 
   marcarLinkAtivo();
   carregarUsuarioHeader();
+  configurarLogoInicial();
   configurarLogout();
 }
 
@@ -74,9 +76,9 @@ function configurarLogout() {
     return;
   }
 
-  botaoSair.addEventListener("click", async () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
+  botaoSair.addEventListener("click", () => {
+    window.Session?.limparSessao?.();
+    window.Session?.salvarMensagemFlash?.("Sessão encerrada com sucesso.", "info");
     window.location.href = "login.html";
   });
 }
@@ -88,13 +90,37 @@ function carregarUsuarioHeader() {
     return;
   }
 
-  try {
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const usuario = window.Session?.obterUsuario?.();
+  const perfil = window.Session?.obterPerfil?.();
 
-    if (usuario?.nome) {
-      elementoNome.textContent = usuario.nome;
-    }
-  } catch (erro) {
-    console.error("Não foi possível ler o usuário salvo:", erro);
+  if (usuario?.nome) {
+    const perfilFormatado = perfil ? formatarPerfil(perfil) : "";
+    elementoNome.textContent = perfilFormatado
+      ? `${usuario.nome} · ${perfilFormatado}`
+      : usuario.nome;
   }
+}
+
+function configurarLogoInicial() {
+  const logo = document.getElementById("brand-home-link");
+
+  if (!logo) {
+    return;
+  }
+
+  const perfil = window.Session?.obterPerfil?.();
+  const pagina = window.Session?.paginaPorPerfil?.(perfil) || "login.html";
+  logo.setAttribute("href", pagina);
+}
+
+function formatarPerfil(perfil) {
+  const nomes = {
+    aluno: "Aluno",
+    professor: "Professor",
+    administrador: "Administrador",
+    admin: "Administrador",
+    coordenador: "Coordenador"
+  };
+
+  return nomes[perfil] || perfil;
 }
