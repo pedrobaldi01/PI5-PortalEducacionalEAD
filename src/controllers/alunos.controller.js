@@ -43,7 +43,7 @@ async function buscarRegistro(id) {
 }
 
 async function listarAlunos(_req, res) {
-  const linhas = await executar(`${selectBase} ORDER BY u.nome`);
+  const linhas = await executar(`${selectBase} WHERE u.status = 'Ativo' ORDER BY u.nome`);
   return res.status(200).json({ total: linhas.length, dados: linhas.map(formatarAluno) });
 }
 

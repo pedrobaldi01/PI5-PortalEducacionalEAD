@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  configurarEnvioAtividade();
   await carregarPainelAluno();
 });
 
@@ -14,7 +15,10 @@ async function carregarPainelAluno() {
   const resultados = await buscarColecoesAluno();
 
   if (resultadoExpirouSessao(resultados)) {
-    window.Session?.salvarMensagemFlash?.("Sessão expirada. Faça login novamente.", "warning");
+    window.Session?.salvarMensagemFlash?.(
+      "Sessão expirada. Faça login novamente.",
+      "warning",
+    );
     window.Session?.limparSessao?.();
     window.location.replace("login.html");
     return;
@@ -29,7 +33,11 @@ async function carregarPainelAluno() {
   const envios = resultados.envios.dados;
 
   renderResumoAluno({ turmas, atividades, conteudos, notas, avisos, envios });
-  renderDisciplinas(turmas, matriculas, resultados.turmas.erro || resultados.matriculas.erro);
+  renderDisciplinas(
+    turmas,
+    matriculas,
+    resultados.turmas.erro || resultados.matriculas.erro,
+  );
   renderAtividades(atividades, notas, envios, resultados.atividades.erro);
   renderConteudos(conteudos, turmas, resultados.conteudos.erro);
   renderNotas(notas, atividades, turmas, resultados.notas.erro);
@@ -37,11 +45,26 @@ async function carregarPainelAluno() {
 }
 
 function mostrarLoadingsAluno() {
-  window.UI?.mostrarLoading?.(document.getElementById("disciplinas-lista"), "Carregando turmas e disciplinas...");
-  window.UI?.mostrarLoading?.(document.getElementById("atividades-lista"), "Carregando atividades...");
-  window.UI?.mostrarLoading?.(document.getElementById("conteudos-lista"), "Carregando conteúdos...");
-  window.UI?.mostrarLoading?.(document.getElementById("notas-lista"), "Carregando notas...");
-  window.UI?.mostrarLoading?.(document.getElementById("avisos-lista"), "Carregando avisos...");
+  window.UI?.mostrarLoading?.(
+    document.getElementById("disciplinas-lista"),
+    "Carregando turmas e disciplinas...",
+  );
+  window.UI?.mostrarLoading?.(
+    document.getElementById("atividades-lista"),
+    "Carregando atividades...",
+  );
+  window.UI?.mostrarLoading?.(
+    document.getElementById("conteudos-lista"),
+    "Carregando conteúdos...",
+  );
+  window.UI?.mostrarLoading?.(
+    document.getElementById("notas-lista"),
+    "Carregando notas...",
+  );
+  window.UI?.mostrarLoading?.(
+    document.getElementById("avisos-lista"),
+    "Carregando avisos...",
+  );
 }
 
 async function buscarColecoesAluno() {
@@ -52,10 +75,18 @@ async function buscarColecoesAluno() {
     buscarLista("/materiais"),
     buscarLista("/notas/minhas"),
     buscarLista("/avisos"),
-    buscarLista("/envios-atividades/meus")
+    buscarLista("/envios-atividades/meus"),
   ]);
 
-  const nomes = ["turmas", "matriculas", "atividades", "conteudos", "notas", "avisos", "envios"];
+  const nomes = [
+    "turmas",
+    "matriculas",
+    "atividades",
+    "conteudos",
+    "notas",
+    "avisos",
+    "envios",
+  ];
 
   return nomes.reduce((acc, nome, index) => {
     const resultado = entradas[index];
@@ -104,49 +135,65 @@ function resultadoExpirouSessao(resultados) {
   });
 }
 
-function renderResumoAluno({ turmas, atividades, conteudos, notas, avisos, envios }) {
+function renderResumoAluno({
+  turmas,
+  atividades,
+  conteudos,
+  notas,
+  avisos,
+  envios,
+}) {
   const container = document.getElementById("resumo-aluno");
   if (!container) return;
 
   const atividadesPendentes = atividades.filter((atividade) => {
-    return calcularStatusAtividade(atividade, notas, envios).chave === "pendente";
+    return (
+      calcularStatusAtividade(atividade, notas, envios).chave === "pendente"
+    );
   }).length;
 
   const cards = [
     {
       rotulo: "Turmas",
       valor: turmas.length,
-      texto: turmas.length === 1 ? "turma vinculada" : "turmas vinculadas"
+      texto: turmas.length === 1 ? "turma vinculada" : "turmas vinculadas",
     },
     {
       rotulo: "Atividades",
       valor: atividadesPendentes,
-      texto: atividadesPendentes === 1 ? "pendente" : "pendentes"
+      texto: atividadesPendentes === 1 ? "pendente" : "pendentes",
     },
     {
       rotulo: "Conteúdos",
       valor: conteudos.length,
-      texto: conteudos.length === 1 ? "material disponível" : "materiais disponíveis"
+      texto:
+        conteudos.length === 1
+          ? "material disponível"
+          : "materiais disponíveis",
     },
     {
       rotulo: "Notas",
       valor: notas.length,
-      texto: notas.length === 1 ? "nota lançada" : "notas lançadas"
+      texto: notas.length === 1 ? "nota lançada" : "notas lançadas",
     },
     {
       rotulo: "Avisos",
       valor: avisos.length,
-      texto: avisos.length === 1 ? "comunicado" : "comunicados"
-    }
+      texto: avisos.length === 1 ? "comunicado" : "comunicados",
+    },
   ];
 
-  container.innerHTML = cards.map((card) => `
+  container.innerHTML = cards
+    .map(
+      (card) => `
     <article class="summary-card">
       <span class="summary-label">${escapeHTML(card.rotulo)}</span>
       <strong>${card.valor}</strong>
       <p>${escapeHTML(card.texto)}</p>
     </article>
-  `).join("");
+  `,
+    )
+    .join("");
 }
 
 function renderDisciplinas(turmas, matriculas, erro) {
@@ -159,16 +206,20 @@ function renderDisciplinas(turmas, matriculas, erro) {
   }
 
   if (!turmas.length) {
-    window.UI?.mostrarEstadoVazio?.(container, "Nenhuma turma ou disciplina encontrada para este aluno.");
+    window.UI?.mostrarEstadoVazio?.(
+      container,
+      "Nenhuma turma ou disciplina encontrada para este aluno.",
+    );
     return;
   }
 
   const matriculasPorTurma = criarMapaPorId(matriculas, "turmaId");
 
-  container.innerHTML = turmas.map((turma) => {
-    const matricula = matriculasPorTurma.get(Number(turma.id));
+  container.innerHTML = turmas
+    .map((turma) => {
+      const matricula = matriculasPorTurma.get(Number(turma.id));
 
-    return `
+      return `
       <article class="course-card">
         <div>
           <h3>${escapeHTML(turma.disciplina || turma.nome || "Disciplina")}</h3>
@@ -181,7 +232,8 @@ function renderDisciplinas(turmas, matriculas, erro) {
         </span>
       </article>
     `;
-  }).join("");
+    })
+    .join("");
 }
 
 function renderAtividades(atividades, notas, envios, erro) {
@@ -198,19 +250,59 @@ function renderAtividades(atividades, notas, envios, erro) {
     return;
   }
 
-  const ordenadas = [...atividades].sort((a, b) => dataParaOrdenacao(a.dataEntrega) - dataParaOrdenacao(b.dataEntrega));
+  const ordenadas = [...atividades].sort(
+    (a, b) =>
+      dataParaOrdenacao(a.dataEntrega) - dataParaOrdenacao(b.dataEntrega),
+  );
+  const enviosPorAtividade = criarMapaPorId(envios, "atividadeId");
 
   container.innerHTML = `
     <ul class="activity-list detailed-list">
-      ${ordenadas.map((atividade) => {
-        const status = calcularStatusAtividade(atividade, notas, envios);
+      ${ordenadas
+        .map((atividade) => {
+          const status = calcularStatusAtividade(atividade, notas, envios);
+          const envio = enviosPorAtividade.get(Number(atividade.id));
+          const podeEnviar = podeEnviarAtividade(atividade, status);
+          const textoBotao = envio ? "Atualizar resposta" : "Enviar resposta";
+          const comentarioAtual = envio?.comentario || "";
 
-        return `
+          return `
           <li>
             <div>
               <strong>${escapeHTML(atividade.titulo || "Atividade sem título")}</strong>
               <span>${escapeHTML(atividade.turma || "Turma não informada")}</span>
               ${atividade.descricao ? `<p>${escapeHTML(atividade.descricao)}</p>` : ""}
+              ${
+                envio
+                  ? `
+                <div class="feedback feedback-info mt-16">
+                  <strong>Resposta enviada:</strong>
+                  <p>${escapeHTML(envio.comentario || "Sem comentário informado.")}</p>
+                  <small>Último envio: ${escapeHTML(formatarDataTela(envio.dataEnvio))}</small>
+                </div>
+              `
+                  : ""
+              }
+              ${
+                podeEnviar
+                  ? `
+                <form class="form mt-16 form-envio-atividade" data-action="enviar-atividade" data-atividade-id="${escapeAttr(atividade.id)}">
+                  <div class="input-group">
+                    <label for="comentario-atividade-${escapeAttr(atividade.id)}">Resposta da atividade</label>
+                    <textarea
+                      id="comentario-atividade-${escapeAttr(atividade.id)}"
+                      name="comentario"
+                      placeholder="Digite sua resposta para esta atividade"
+                      required
+                    >${escapeHTML(comentarioAtual)}</textarea>
+                  </div>
+                  <button class="button button-primary button-small" type="submit">
+                    ${escapeHTML(textoBotao)}
+                  </button>
+                </form>
+              `
+                  : ""
+              }
             </div>
             <div class="list-meta">
               <time>Entrega: ${escapeHTML(formatarDataTela(atividade.dataEntrega))}</time>
@@ -218,7 +310,8 @@ function renderAtividades(atividades, notas, envios, erro) {
             </div>
           </li>
         `;
-      }).join("")}
+        })
+        .join("")}
     </ul>
   `;
 }
@@ -238,17 +331,24 @@ function renderConteudos(conteudos, turmas, erro) {
   }
 
   const turmasPorId = criarMapaPorId(turmas, "id");
-  const ordenados = [...conteudos].sort((a, b) => dataParaOrdenacao(b.dataPostagem) - dataParaOrdenacao(a.dataPostagem));
+  const ordenados = [...conteudos].sort(
+    (a, b) =>
+      dataParaOrdenacao(b.dataPostagem) - dataParaOrdenacao(a.dataPostagem),
+  );
 
   container.innerHTML = `
     <ul class="simple-list content-list">
-      ${ordenados.map((conteudo) => {
-        const turma = turmasPorId.get(Number(conteudo.turmaId));
-        const disciplina = turma?.disciplina || conteudo.turma || "Turma não informada";
-        const linkArquivo = conteudo.arquivoId ? `/arquivos/${conteudo.arquivoId}/download` : null;
-        const link = conteudo.link || linkArquivo;
+      ${ordenados
+        .map((conteudo) => {
+          const turma = turmasPorId.get(Number(conteudo.turmaId));
+          const disciplina =
+            turma?.disciplina || conteudo.turma || "Turma não informada";
+          const linkArquivo = conteudo.arquivoId
+            ? `/arquivos/${conteudo.arquivoId}/download`
+            : null;
+          const link = conteudo.link || linkArquivo;
 
-        return `
+          return `
           <li class="content-item">
             <div>
               <strong>${escapeHTML(conteudo.titulo || "Conteúdo sem título")}</strong>
@@ -259,7 +359,8 @@ function renderConteudos(conteudos, turmas, erro) {
             ${link ? `<a class="button button-secondary button-small" href="${escapeAttr(link)}" target="_blank" rel="noopener">Acessar</a>` : ""}
           </li>
         `;
-      }).join("")}
+        })
+        .join("")}
     </ul>
   `;
 }
@@ -280,7 +381,10 @@ function renderNotas(notas, atividades, turmas, erro) {
 
   const atividadesPorId = criarMapaPorId(atividades, "id");
   const turmasPorId = criarMapaPorId(turmas, "id");
-  const ordenadas = [...notas].sort((a, b) => dataParaOrdenacao(b.dataCorrecao) - dataParaOrdenacao(a.dataCorrecao));
+  const ordenadas = [...notas].sort(
+    (a, b) =>
+      dataParaOrdenacao(b.dataCorrecao) - dataParaOrdenacao(a.dataCorrecao),
+  );
 
   container.innerHTML = `
     <div class="table-wrapper">
@@ -294,13 +398,17 @@ function renderNotas(notas, atividades, turmas, erro) {
           </tr>
         </thead>
         <tbody>
-          ${ordenadas.map((nota) => {
-            const atividade = atividadesPorId.get(Number(nota.atividadeId));
-            const turma = atividade ? turmasPorId.get(Number(atividade.turmaId)) : null;
-            const origem = turma?.disciplina || atividade?.turma || "Não informado";
-            const valorNota = formatarNota(nota.nota, nota.notaMaxima);
+          ${ordenadas
+            .map((nota) => {
+              const atividade = atividadesPorId.get(Number(nota.atividadeId));
+              const turma = atividade
+                ? turmasPorId.get(Number(atividade.turmaId))
+                : null;
+              const origem =
+                turma?.disciplina || atividade?.turma || "Não informado";
+              const valorNota = formatarNota(nota.nota, nota.notaMaxima);
 
-            return `
+              return `
               <tr>
                 <td>${escapeHTML(origem)}</td>
                 <td>${escapeHTML(nota.atividade || atividade?.titulo || "Avaliação")}</td>
@@ -308,7 +416,8 @@ function renderNotas(notas, atividades, turmas, erro) {
                 <td>${escapeHTML(formatarDataTela(nota.dataCorrecao))}</td>
               </tr>
             `;
-          }).join("")}
+            })
+            .join("")}
         </tbody>
       </table>
     </div>
@@ -330,15 +439,20 @@ function renderAvisos(avisos, turmas, erro) {
   }
 
   const turmasPorId = criarMapaPorId(turmas, "id");
-  const ordenados = [...avisos].sort((a, b) => dataParaOrdenacao(b.dataPublicacao) - dataParaOrdenacao(a.dataPublicacao));
+  const ordenados = [...avisos].sort(
+    (a, b) =>
+      dataParaOrdenacao(b.dataPublicacao) - dataParaOrdenacao(a.dataPublicacao),
+  );
 
   container.innerHTML = `
     <div class="notice-list">
-      ${ordenados.map((aviso) => {
-        const turma = turmasPorId.get(Number(aviso.turmaId));
-        const contexto = turma?.disciplina || aviso.turma || "Turma não informada";
+      ${ordenados
+        .map((aviso) => {
+          const turma = turmasPorId.get(Number(aviso.turmaId));
+          const contexto =
+            turma?.disciplina || aviso.turma || "Turma não informada";
 
-        return `
+          return `
           <article class="notice-card">
             <div>
               <h3>${escapeHTML(aviso.titulo || "Aviso")}</h3>
@@ -348,18 +462,91 @@ function renderAvisos(avisos, turmas, erro) {
             ${aviso.autor ? `<span class="badge badge-neutral">${escapeHTML(aviso.autor)}</span>` : ""}
           </article>
         `;
-      }).join("")}
+        })
+        .join("")}
     </div>
   `;
 }
 
+function configurarEnvioAtividade() {
+  document.addEventListener("submit", async (event) => {
+    const form = event.target.closest("[data-action='enviar-atividade']");
+
+    if (!form) {
+      return;
+    }
+
+    event.preventDefault();
+    await enviarRespostaAtividade(form);
+  });
+}
+
+async function enviarRespostaAtividade(form) {
+  const atividadeId = Number(form.dataset.atividadeId);
+  const comentario = String(form.comentario?.value || "").trim();
+
+  if (!atividadeId) {
+    window.UI?.mostrarErro?.("Atividade inválida.");
+    return;
+  }
+
+  if (!comentario) {
+    window.UI?.mostrarErro?.("Digite uma resposta antes de enviar.");
+    return;
+  }
+
+  const botao = form.querySelector("button[type='submit']");
+  const textoOriginal = botao?.textContent;
+
+  try {
+    if (botao) {
+      botao.disabled = true;
+      botao.textContent = "Enviando...";
+    }
+
+    await window.Api.post("/envios-atividades", {
+      atividadeId,
+      comentario,
+    });
+
+    window.UI?.mostrarSucesso?.("Resposta enviada com sucesso.");
+    await carregarPainelAluno();
+  } catch (erro) {
+    console.error(erro);
+    window.UI?.mostrarErro?.(erro.message || "Erro ao enviar resposta.");
+  } finally {
+    if (botao) {
+      botao.disabled = false;
+      botao.textContent = textoOriginal;
+    }
+  }
+}
+
+function podeEnviarAtividade(atividade, statusCalculado) {
+  const statusAtividade = String(atividade.status || "").toLowerCase();
+
+  if (statusAtividade === "encerrada" || statusAtividade === "cancelada") {
+    return false;
+  }
+
+  if (statusCalculado?.chave === "corrigida") {
+    return false;
+  }
+
+  return true;
+}
+
 function calcularStatusAtividade(atividade, notas, envios) {
-  const nota = notas.find((item) => Number(item.atividadeId) === Number(atividade.id));
+  const nota = notas.find(
+    (item) => Number(item.atividadeId) === Number(atividade.id),
+  );
   if (nota) {
     return { chave: "corrigida", texto: "Corrigida", classe: "badge-soft" };
   }
 
-  const envio = envios.find((item) => Number(item.atividadeId) === Number(atividade.id));
+  const envio = envios.find(
+    (item) => Number(item.atividadeId) === Number(atividade.id),
+  );
   if (envio) {
     const texto = envio.status || "Entregue";
     return { chave: "entregue", texto, classe: "badge-soft" };
@@ -367,7 +554,11 @@ function calcularStatusAtividade(atividade, notas, envios) {
 
   const statusAtividade = String(atividade.status || "").toLowerCase();
   if (statusAtividade === "encerrada" || statusAtividade === "cancelada") {
-    return { chave: statusAtividade, texto: atividade.status, classe: "badge-neutral" };
+    return {
+      chave: statusAtividade,
+      texto: atividade.status,
+      classe: "badge-neutral",
+    };
   }
 
   if (atividade.dataEntrega && new Date(atividade.dataEntrega) < new Date()) {
@@ -393,7 +584,11 @@ function criarMapaPorId(lista, campo) {
 function classeBadgeStatus(status) {
   const normalizado = String(status || "").toLowerCase();
 
-  if (["ativa", "aberta", "em andamento", "concluída", "concluida"].includes(normalizado)) {
+  if (
+    ["ativa", "aberta", "em andamento", "concluída", "concluida"].includes(
+      normalizado,
+    )
+  ) {
     return "badge-soft";
   }
 
@@ -415,7 +610,9 @@ function renderErro(container, texto) {
 function dataParaOrdenacao(valor) {
   if (!valor) return Number.MAX_SAFE_INTEGER;
   const data = new Date(valor);
-  return Number.isNaN(data.getTime()) ? Number.MAX_SAFE_INTEGER : data.getTime();
+  return Number.isNaN(data.getTime())
+    ? Number.MAX_SAFE_INTEGER
+    : data.getTime();
 }
 
 function formatarDataTela(valor) {
@@ -432,7 +629,7 @@ function formatarDataTela(valor) {
     month: "2-digit",
     year: "numeric",
     hour: data.getHours() || data.getMinutes() ? "2-digit" : undefined,
-    minute: data.getHours() || data.getMinutes() ? "2-digit" : undefined
+    minute: data.getHours() || data.getMinutes() ? "2-digit" : undefined,
   }).format(data);
 }
 

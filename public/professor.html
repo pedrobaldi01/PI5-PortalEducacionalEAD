@@ -190,6 +190,58 @@
             </form>
           </article>
 
+          <article class="panel" id="avisos">
+            <div class="panel-header">
+              <div>
+                <h2>Criar aviso</h2>
+                <p class="panel-subtitle">Publique um comunicado para uma turma.</p>
+              </div>
+            </div>
+
+            <form id="form-aviso" class="form">
+              <div class="input-group">
+                <label for="avisoTurma">Turma</label>
+                <select id="avisoTurma" name="turmaId" required>
+                  <option value="">Carregando turmas...</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <label for="avisoTitulo">Título</label>
+                <input
+                  type="text"
+                  id="avisoTitulo"
+                  name="titulo"
+                  placeholder="Ex: Orientações para a próxima aula"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="avisoMensagem">Mensagem</label>
+                <textarea
+                  id="avisoMensagem"
+                  name="mensagem"
+                  placeholder="Digite o comunicado que será exibido para os alunos."
+                  required
+                ></textarea>
+              </div>
+
+              <button class="button button-primary" type="submit">Publicar aviso</button>
+              <p id="aviso-feedback" class="feedback hidden"></p>
+            </form>
+          </article>
+
+          <article class="panel panel-wide" id="avisos-publicados">
+            <div class="panel-header">
+              <div>
+                <h2>Avisos publicados</h2>
+                <p class="panel-subtitle">Comunicados já publicados nas suas turmas.</p>
+              </div>
+            </div>
+            <div id="avisos-professor-lista"></div>
+          </article>
+
           <article class="panel panel-wide" id="conteudos-listados">
             <div class="panel-header">
               <div>

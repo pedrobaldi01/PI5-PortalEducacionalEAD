@@ -15,7 +15,8 @@ const estadoProfessor = {
   atividades: [],
   envios: [],
   notas: [],
-  alunosPorTurma: new Map()
+  avisos: [],
+  alunosPorTurma: new Map(),
 };
 
 async function inicializarPainelProfessor() {
@@ -28,14 +29,16 @@ async function carregarPainelProfessor() {
   mostrarLoadingsProfessor();
 
   try {
-    const [perfil, turmas, materiais, atividades, envios, notas] = await Promise.all([
-      buscarDados("/professores/me"),
-      buscarLista("/turmas/minhas"),
-      buscarLista("/materiais"),
-      buscarLista("/atividades"),
-      buscarLista("/envios-atividades"),
-      buscarLista("/notas")
-    ]);
+    const [perfil, turmas, materiais, atividades, envios, notas, avisos] =
+      await Promise.all([
+        buscarDados("/professores/me"),
+        buscarLista("/turmas/minhas"),
+        buscarLista("/materiais"),
+        buscarLista("/atividades"),
+        buscarLista("/envios-atividades"),
+        buscarLista("/notas"),
+        buscarLista("/avisos"),
+      ]);
 
     estadoProfessor.perfil = perfil;
     estadoProfessor.turmas = turmas;
@@ -43,6 +46,7 @@ async function carregarPainelProfessor() {
     estadoProfessor.atividades = atividades;
     estadoProfessor.envios = envios;
     estadoProfessor.notas = notas;
+    estadoProfessor.avisos = avisos;
 
     renderResumoProfessor();
     renderTurmasProfessor();
@@ -50,11 +54,15 @@ async function carregarPainelProfessor() {
     renderAtividadesProfessor();
     renderEnviosProfessor();
     renderNotasProfessor();
+    renderAvisosProfessor();
     preencherSelectsProfessor();
     await carregarAlunosDaTurmaSelecionada();
+    await carregarAlunosParaNota();
   } catch (erro) {
     console.error(erro);
-    mostrarErroGeralProfessor(erro.message || "Erro ao carregar painel do professor.");
+    mostrarErroGeralProfessor(
+      erro.message || "Erro ao carregar painel do professor.",
+    );
   }
 }
 
@@ -82,7 +90,9 @@ function mostrarLoadingsProfessor() {
     "atividades-professor-lista",
     "alunos-professor-lista",
     "envios-professor-lista",
-    "notas-professor-lista"
+    "notas-professor-lista",
+    "avisos-professor-lista",
+    "avisos-professor-lista",
   ];
 
   ids.forEach((id) => window.UI?.mostrarLoading(document.getElementById(id)));
@@ -96,10 +106,11 @@ function mostrarErroGeralProfessor(mensagem) {
     "atividades-professor-lista",
     "alunos-professor-lista",
     "envios-professor-lista",
-    "notas-professor-lista"
+    "notas-professor-lista",
   ].forEach((id) => {
     const container = document.getElementById(id);
-    if (container) container.innerHTML = `<div class="feedback feedback-error">${escaparHtml(mensagem)}</div>`;
+    if (container)
+      container.innerHTML = `<div class="feedback feedback-error">${escaparHtml(mensagem)}</div>`;
   });
 }
 
@@ -108,23 +119,29 @@ function renderResumoProfessor() {
   if (!container) return;
 
   const disciplinasUnicas = new Set(
-    estadoProfessor.turmas.map((turma) => turma.disciplinaId || turma.disciplina).filter(Boolean)
+    estadoProfessor.turmas
+      .map((turma) => turma.disciplinaId || turma.disciplina)
+      .filter(Boolean),
   );
-  const atividadesAbertas = estadoProfessor.atividades.filter((atividade) => atividade.status === "Aberta");
+  const atividadesAbertas = estadoProfessor.atividades.filter(
+    (atividade) => atividade.status === "Aberta",
+  );
   const enviosRecebidos = estadoProfessor.envios.length;
   const notasLancadas = estadoProfessor.notas.length;
+  const avisosPublicados = estadoProfessor.avisos.length;
 
   container.innerHTML = `
     ${criarCardResumo("Turmas", estadoProfessor.turmas.length, "vinculadas ao professor")}
     ${criarCardResumo("Disciplinas", disciplinasUnicas.size, "disciplinas diferentes")}
     ${criarCardResumo("Atividades", atividadesAbertas.length, "abertas no momento")}
     ${criarCardResumo("Notas", notasLancadas, "lançadas/corrigidas")}
+    ${criarCardResumo("Avisos", avisosPublicados, "publicados")}
   `;
 
   if (enviosRecebidos > 0) {
     container.insertAdjacentHTML(
       "beforeend",
-      criarCardResumo("Envios", enviosRecebidos, "recebidos dos alunos")
+      criarCardResumo("Envios", enviosRecebidos, "recebidos dos alunos"),
     );
   }
 }
@@ -144,13 +161,18 @@ function renderTurmasProfessor() {
   if (!container) return;
 
   if (!estadoProfessor.turmas.length) {
-    window.UI?.mostrarEstadoVazio(container, "Nenhuma turma vinculada a este professor.");
+    window.UI?.mostrarEstadoVazio(
+      container,
+      "Nenhuma turma vinculada a este professor.",
+    );
     return;
   }
 
   container.innerHTML = `
     <div class="course-list">
-      ${estadoProfessor.turmas.map((turma) => `
+      ${estadoProfessor.turmas
+        .map(
+          (turma) => `
         <article class="course-card">
           <div>
             <h3>${escaparHtml(turma.disciplina || turma.nome || "Disciplina")}</h3>
@@ -163,7 +185,9 @@ function renderTurmasProfessor() {
           </div>
           <span class="badge ${classeStatusTurma(turma.status)}">${escaparHtml(turma.status || "Sem status")}</span>
         </article>
-      `).join("")}
+      `,
+        )
+        .join("")}
     </div>
   `;
 }
@@ -173,13 +197,18 @@ function renderMateriaisProfessor() {
   if (!container) return;
 
   if (!estadoProfessor.materiais.length) {
-    window.UI?.mostrarEstadoVazio(container, "Nenhum conteúdo publicado ainda.");
+    window.UI?.mostrarEstadoVazio(
+      container,
+      "Nenhum conteúdo publicado ainda.",
+    );
     return;
   }
 
   container.innerHTML = `
     <div class="detail-list">
-      ${estadoProfessor.materiais.map((material) => `
+      ${estadoProfessor.materiais
+        .map(
+          (material) => `
         <article class="detail-card">
           <div class="detail-card-main">
             <h3>${escaparHtml(material.titulo || "Material sem título")}</h3>
@@ -195,12 +224,16 @@ function renderMateriaisProfessor() {
             <button class="button button-ghost-danger button-small" type="button" data-remover-material="${material.id}">Remover</button>
           </div>
         </article>
-      `).join("")}
+      `,
+        )
+        .join("")}
     </div>
   `;
 
   container.querySelectorAll("[data-remover-material]").forEach((botao) => {
-    botao.addEventListener("click", () => removerMaterial(botao.dataset.removerMaterial));
+    botao.addEventListener("click", () =>
+      removerMaterial(botao.dataset.removerMaterial),
+    );
   });
 }
 
@@ -227,7 +260,9 @@ function renderAtividadesProfessor() {
           </tr>
         </thead>
         <tbody>
-          ${estadoProfessor.atividades.map((atividade) => `
+          ${estadoProfessor.atividades
+            .map(
+              (atividade) => `
             <tr>
               <td>
                 <strong>${escaparHtml(atividade.titulo || "-")}</strong>
@@ -241,14 +276,18 @@ function renderAtividadesProfessor() {
                 <button class="button button-ghost-danger button-small" type="button" data-remover-atividade="${atividade.id}">Remover</button>
               </td>
             </tr>
-          `).join("")}
+          `,
+            )
+            .join("")}
         </tbody>
       </table>
     </div>
   `;
 
   container.querySelectorAll("[data-remover-atividade]").forEach((botao) => {
-    botao.addEventListener("click", () => removerAtividade(botao.dataset.removerAtividade));
+    botao.addEventListener("click", () =>
+      removerAtividade(botao.dataset.removerAtividade),
+    );
   });
 }
 
@@ -260,7 +299,10 @@ async function carregarAlunosDaTurmaSelecionada() {
   const turmaId = select.value || estadoProfessor.turmas[0]?.id;
 
   if (!turmaId) {
-    window.UI?.mostrarEstadoVazio(container, "Nenhuma turma disponível para consultar alunos.");
+    window.UI?.mostrarEstadoVazio(
+      container,
+      "Nenhuma turma disponível para consultar alunos.",
+    );
     return;
   }
 
@@ -292,7 +334,10 @@ function renderAlunosProfessor(alunos) {
   if (!container) return;
 
   if (!alunos.length) {
-    window.UI?.mostrarEstadoVazio(container, "Nenhum aluno matriculado nesta turma.");
+    window.UI?.mostrarEstadoVazio(
+      container,
+      "Nenhum aluno matriculado nesta turma.",
+    );
     return;
   }
 
@@ -307,13 +352,17 @@ function renderAlunosProfessor(alunos) {
           </tr>
         </thead>
         <tbody>
-          ${alunos.map((aluno) => `
+          ${alunos
+            .map(
+              (aluno) => `
             <tr>
               <td>${escaparHtml(aluno.aluno || "-")}</td>
               <td><span class="status-badge ${classeStatusMatricula(aluno.status)}">${escaparHtml(aluno.status || "-")}</span></td>
               <td>${escaparHtml(aluno.dataMatricula || "-")}</td>
             </tr>
-          `).join("")}
+          `,
+            )
+            .join("")}
         </tbody>
       </table>
     </div>
@@ -329,17 +378,26 @@ function renderEnviosProfessor() {
   let envios = [...estadoProfessor.envios];
 
   if (atividadeSelecionada) {
-    envios = envios.filter((envio) => String(envio.atividadeId) === String(atividadeSelecionada));
+    envios = envios.filter(
+      (envio) => String(envio.atividadeId) === String(atividadeSelecionada),
+    );
   }
 
   if (!envios.length) {
-    window.UI?.mostrarEstadoVazio(container, atividadeSelecionada ? "Nenhum envio para esta atividade." : "Nenhum envio recebido ainda.");
+    window.UI?.mostrarEstadoVazio(
+      container,
+      atividadeSelecionada
+        ? "Nenhum envio para esta atividade."
+        : "Nenhum envio recebido ainda.",
+    );
     return;
   }
 
   container.innerHTML = `
     <div class="detail-list">
-      ${envios.map((envio) => `
+      ${envios
+        .map(
+          (envio) => `
         <article class="detail-card">
           <div class="detail-card-main">
             <h3>${escaparHtml(envio.atividade || "Atividade")}</h3>
@@ -354,7 +412,9 @@ function renderEnviosProfessor() {
             ${envio.arquivoId ? `<a class="button button-secondary button-small" href="/arquivos/${envio.arquivoId}/download" target="_blank" rel="noopener noreferrer">Baixar arquivo</a>` : ""}
           </div>
         </article>
-      `).join("")}
+      `,
+        )
+        .join("")}
     </div>
   `;
 }
@@ -381,7 +441,9 @@ function renderNotasProfessor() {
           </tr>
         </thead>
         <tbody>
-          ${estadoProfessor.notas.map((nota) => `
+          ${estadoProfessor.notas
+            .map(
+              (nota) => `
             <tr>
               <td>${escaparHtml(nota.aluno || "-")}</td>
               <td>${escaparHtml(nota.atividade || "-")}</td>
@@ -389,9 +451,55 @@ function renderNotasProfessor() {
               <td>${escaparHtml(nota.feedback || "-")}</td>
               <td>${formatarDataHora(nota.dataCorrecao)}</td>
             </tr>
-          `).join("")}
+          `,
+            )
+            .join("")}
         </tbody>
       </table>
+    </div>
+  `;
+}
+
+function renderAvisosProfessor() {
+  const container = document.getElementById("avisos-professor-lista");
+  if (!container) return;
+
+  if (!estadoProfessor.avisos.length) {
+    window.UI?.mostrarEstadoVazio(container, "Nenhum aviso publicado ainda.");
+    return;
+  }
+
+  const ordenados = [...estadoProfessor.avisos].sort((a, b) =>
+    ordenarDataDecrescente(a.dataPublicacao, b.dataPublicacao),
+  );
+
+  container.innerHTML = `
+    <div class="detail-list">
+      ${ordenados
+        .map(
+          (aviso) => `
+        <article class="detail-card">
+          <div class="detail-card-main">
+            <h3>${escaparHtml(aviso.titulo || "Aviso")}</h3>
+            <p>${escaparHtml(aviso.mensagem || "")}</p>
+            <small>
+              ${escaparHtml(aviso.turma || "Turma não informada")}
+              ${aviso.dataPublicacao ? ` • Publicado em ${formatarDataHora(aviso.dataPublicacao)}` : ""}
+            </small>
+          </div>
+          <div class="table-actions">
+            <button
+              class="button button-small button-ghost-danger"
+              type="button"
+              onclick="removerAviso(${Number(aviso.id)})"
+            >
+              Remover
+            </button>
+          </div>
+        </article>
+      `,
+        )
+        .join("")}
     </div>
   `;
 }
@@ -399,6 +507,7 @@ function renderNotasProfessor() {
 function preencherSelectsProfessor() {
   preencherSelectTurmas("materialTurma");
   preencherSelectTurmas("atividadeTurma");
+  preencherSelectTurmas("avisoTurma");
   preencherSelectTurmas("alunosTurma", "Selecione uma turma");
   preencherSelectAtividades("enviosAtividade", "Todas as atividades", true);
   preencherSelectAtividades("notaAtividade", "Selecione uma atividade");
@@ -418,13 +527,21 @@ function preencherSelectTurmas(id, textoInicial = "Selecione uma turma") {
   select.disabled = false;
   select.innerHTML = `
     <option value="">${escaparHtml(textoInicial)}</option>
-    ${estadoProfessor.turmas.map((turma) => `
+    ${estadoProfessor.turmas
+      .map(
+        (turma) => `
       <option value="${turma.id}">${escaparHtml(turma.nome || "Turma")} — ${escaparHtml(turma.disciplina || "Disciplina")}</option>
-    `).join("")}
+    `,
+      )
+      .join("")}
   `;
 }
 
-function preencherSelectAtividades(id, textoInicial = "Selecione uma atividade", permitirTodas = false) {
+function preencherSelectAtividades(
+  id,
+  textoInicial = "Selecione uma atividade",
+  permitirTodas = false,
+) {
   const select = document.getElementById(id);
   if (!select) return;
 
@@ -437,9 +554,13 @@ function preencherSelectAtividades(id, textoInicial = "Selecione uma atividade",
   select.disabled = false;
   select.innerHTML = `
     <option value="">${escaparHtml(textoInicial)}</option>
-    ${estadoProfessor.atividades.map((atividade) => `
+    ${estadoProfessor.atividades
+      .map(
+        (atividade) => `
       <option value="${atividade.id}">${escaparHtml(atividade.titulo || "Atividade")} — ${escaparHtml(atividade.turma || "Turma")}</option>
-    `).join("")}
+    `,
+      )
+      .join("")}
   `;
 
   if (!permitirTodas && estadoProfessor.atividades.length === 1) {
@@ -460,15 +581,20 @@ function preencherSelectAlunosNota(alunos) {
   select.disabled = false;
   select.innerHTML = `
     <option value="">Selecione um aluno</option>
-    ${alunos.map((aluno) => `
+    ${alunos
+      .map(
+        (aluno) => `
       <option value="${aluno.alunoId}">${escaparHtml(aluno.aluno || `Aluno ${aluno.alunoId}`)}</option>
-    `).join("")}
+    `,
+      )
+      .join("")}
   `;
 }
 
 function configurarFormulariosProfessor() {
   configurarFormularioMaterial();
   configurarFormularioAtividade();
+  configurarFormularioAviso();
   configurarFormularioNota();
 }
 
@@ -497,17 +623,27 @@ function configurarFormularioMaterial() {
       titulo: form.titulo.value.trim(),
       descricao: form.descricao.value.trim() || undefined,
       link: form.link.value.trim() || undefined,
-      arquivoId: form.arquivoId.value ? Number(form.arquivoId.value) : undefined
+      arquivoId: form.arquivoId.value
+        ? Number(form.arquivoId.value)
+        : undefined,
     };
 
     if (!dados.link && !dados.arquivoId) {
-      window.UI?.definirFeedback(feedback, "Informe um link ou um ID de arquivo.", "error");
+      window.UI?.definirFeedback(
+        feedback,
+        "Informe um link ou um ID de arquivo.",
+        "error",
+      );
       return;
     }
 
     await executarAcaoFormulario(form, feedback, async () => {
       const resposta = await window.Api.post("/materiais", dados);
-      window.UI?.definirFeedback(feedback, resposta?.mensagem || "Conteúdo publicado com sucesso.", "success");
+      window.UI?.definirFeedback(
+        feedback,
+        resposta?.mensagem || "Conteúdo publicado com sucesso.",
+        "success",
+      );
       form.reset();
       await recarregarDadosProfessor(["materiais"]);
     });
@@ -530,17 +666,48 @@ function configurarFormularioAtividade() {
       dataEntrega: form.dataEntrega.value,
       notaMaxima: Number(form.notaMaxima.value),
       status: form.status.value,
-      avaliativa: form.avaliativa.value === "true"
+      avaliativa: form.avaliativa.value === "true",
     };
 
     await executarAcaoFormulario(form, feedback, async () => {
       const resposta = await window.Api.post("/atividades", dados);
-      window.UI?.definirFeedback(feedback, resposta?.mensagem || "Atividade criada com sucesso.", "success");
+      window.UI?.definirFeedback(
+        feedback,
+        resposta?.mensagem || "Atividade criada com sucesso.",
+        "success",
+      );
       form.reset();
       form.notaMaxima.value = "10";
       form.status.value = "Aberta";
       form.avaliativa.value = "true";
       await recarregarDadosProfessor(["atividades", "envios", "notas"]);
+    });
+  });
+}
+
+function configurarFormularioAviso() {
+  const form = document.getElementById("form-aviso");
+  const feedback = document.getElementById("aviso-feedback");
+  if (!form) return;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    window.UI?.limparFeedback(feedback);
+
+    const dados = {
+      turmaId: Number(form.turmaId.value),
+      titulo: form.titulo.value.trim(),
+      mensagem: form.mensagem.value.trim(),
+    };
+
+    await executarAcaoFormulario(form, feedback, async () => {
+      const resposta = await window.Api.post("/avisos", dados);
+      window.UI?.definirFeedback(
+        feedback,
+        resposta?.mensagem || "Aviso publicado com sucesso.",
+        "success",
+      );
+      await recarregarDadosProfessor(["avisos"]);
     });
   });
 }
@@ -554,22 +721,32 @@ function configurarFormularioNota() {
     event.preventDefault();
     window.UI?.limparFeedback(feedback);
 
-    const atividade = estadoProfessor.atividades.find((item) => String(item.id) === String(form.atividadeId.value));
+    const atividade = estadoProfessor.atividades.find(
+      (item) => String(item.id) === String(form.atividadeId.value),
+    );
     const dados = {
       atividadeId: Number(form.atividadeId.value),
       alunoId: Number(form.alunoId.value),
       nota: Number(form.nota.value),
-      feedback: form.feedback.value.trim() || undefined
+      feedback: form.feedback.value.trim() || undefined,
     };
 
     if (atividade && dados.nota > Number(atividade.notaMaxima)) {
-      window.UI?.definirFeedback(feedback, `A nota não pode ultrapassar ${formatarNumero(atividade.notaMaxima)}.`, "error");
+      window.UI?.definirFeedback(
+        feedback,
+        `A nota não pode ultrapassar ${formatarNumero(atividade.notaMaxima)}.`,
+        "error",
+      );
       return;
     }
 
     await executarAcaoFormulario(form, feedback, async () => {
       const resposta = await window.Api.post("/notas", dados);
-      window.UI?.definirFeedback(feedback, resposta?.mensagem || "Nota salva com sucesso.", "success");
+      window.UI?.definirFeedback(
+        feedback,
+        resposta?.mensagem || "Nota salva com sucesso.",
+        "success",
+      );
       form.nota.value = "";
       form.feedback.value = "";
       await recarregarDadosProfessor(["notas"]);
@@ -590,7 +767,11 @@ async function executarAcaoFormulario(form, feedback, acao) {
     await acao();
   } catch (erro) {
     console.error(erro);
-    window.UI?.definirFeedback(feedback, erro.message || "Não foi possível concluir a ação.", "error");
+    window.UI?.definirFeedback(
+      feedback,
+      erro.message || "Não foi possível concluir a ação.",
+      "error",
+    );
   } finally {
     if (botao) {
       botao.disabled = false;
@@ -603,19 +784,43 @@ async function recarregarDadosProfessor(partes = []) {
   const tarefas = [];
 
   if (partes.includes("materiais")) {
-    tarefas.push(buscarLista("/materiais").then((dados) => { estadoProfessor.materiais = dados; }));
+    tarefas.push(
+      buscarLista("/materiais").then((dados) => {
+        estadoProfessor.materiais = dados;
+      }),
+    );
   }
 
   if (partes.includes("atividades")) {
-    tarefas.push(buscarLista("/atividades").then((dados) => { estadoProfessor.atividades = dados; }));
+    tarefas.push(
+      buscarLista("/atividades").then((dados) => {
+        estadoProfessor.atividades = dados;
+      }),
+    );
   }
 
   if (partes.includes("envios")) {
-    tarefas.push(buscarLista("/envios-atividades").then((dados) => { estadoProfessor.envios = dados; }));
+    tarefas.push(
+      buscarLista("/envios-atividades").then((dados) => {
+        estadoProfessor.envios = dados;
+      }),
+    );
   }
 
   if (partes.includes("notas")) {
-    tarefas.push(buscarLista("/notas").then((dados) => { estadoProfessor.notas = dados; }));
+    tarefas.push(
+      buscarLista("/notas").then((dados) => {
+        estadoProfessor.notas = dados;
+      }),
+    );
+  }
+
+  if (partes.includes("avisos")) {
+    tarefas.push(
+      buscarLista("/avisos").then((dados) => {
+        estadoProfessor.avisos = dados;
+      }),
+    );
   }
 
   await Promise.all(tarefas);
@@ -624,8 +829,10 @@ async function recarregarDadosProfessor(partes = []) {
   renderAtividadesProfessor();
   renderEnviosProfessor();
   renderNotasProfessor();
+  renderAvisosProfessor();
   preencherSelectAtividades("enviosAtividade", "Todas as atividades", true);
   preencherSelectAtividades("notaAtividade", "Selecione uma atividade");
+  await carregarAlunosParaNota();
 }
 
 async function carregarAlunosParaNota() {
@@ -637,7 +844,9 @@ async function carregarAlunosParaNota() {
     return;
   }
 
-  const atividade = estadoProfessor.atividades.find((item) => String(item.id) === String(atividadeId));
+  const atividade = estadoProfessor.atividades.find(
+    (item) => String(item.id) === String(atividadeId),
+  );
   if (!atividade?.turmaId) {
     preencherSelectAlunosNota([]);
     return;
@@ -645,7 +854,7 @@ async function carregarAlunosParaNota() {
 
   try {
     const alunos = await obterAlunosDaTurma(atividade.turmaId);
-    preencherSelectAlunosNota(alunos.filter((aluno) => aluno.status === "Ativa" || aluno.status === "Concluída"));
+    preencherSelectAlunosNota(alunos);
 
     const inputNota = document.getElementById("notaValor");
     if (inputNota && atividade.notaMaxima) {
@@ -655,7 +864,22 @@ async function carregarAlunosParaNota() {
   } catch (erro) {
     console.error(erro);
     preencherSelectAlunosNota([]);
-    window.UI?.mostrarErro(erro.message || "Erro ao carregar alunos da atividade.");
+    window.UI?.mostrarErro(
+      erro.message || "Erro ao carregar alunos da atividade.",
+    );
+  }
+}
+
+async function removerAviso(id) {
+  if (!id || !confirm("Deseja remover este aviso?")) return;
+
+  try {
+    await window.Api.delete(`/avisos/${id}`);
+    window.UI?.mostrarSucesso("Aviso removido com sucesso.");
+    await recarregarDadosProfessor(["avisos"]);
+  } catch (erro) {
+    console.error(erro);
+    window.UI?.mostrarErro(erro.message || "Erro ao remover aviso.");
   }
 }
 
@@ -710,6 +934,16 @@ function classeStatusMatricula(status = "") {
   return "status-neutral";
 }
 
+function ordenarDataDecrescente(a, b) {
+  return dataParaOrdenacao(b) - dataParaOrdenacao(a);
+}
+
+function dataParaOrdenacao(valor) {
+  if (!valor) return 0;
+  const data = new Date(valor);
+  return Number.isNaN(data.getTime()) ? 0 : data.getTime();
+}
+
 function formatarDataHora(valor) {
   if (!valor) return "-";
 
@@ -721,7 +955,7 @@ function formatarDataHora(valor) {
     month: "2-digit",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
   });
 }
 
@@ -744,3 +978,5 @@ function escaparHtml(valor) {
 function escaparAtributo(valor) {
   return escaparHtml(valor).replaceAll("`", "&#096;");
 }
+
+window.removerAviso = removerAviso;
