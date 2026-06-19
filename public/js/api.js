@@ -1,11 +1,4 @@
-/*
-  api.js
-  Funções centralizadas para chamadas ao backend local.
 
-  Uso:
-    Api.get('/cursos')
-    Api.post('/auth/login', { login, senha })
-*/
 (function () {
   const API_BASE_URL = ""; // mesma origem: http://localhost:3000
 

@@ -1,7 +1,4 @@
-/*
-  auth.js
-  Login real do frontend usando a rota POST /auth/login.
-*/
+
 document.addEventListener("DOMContentLoaded", () => {
   window.UI?.exibirFlashDaSessao?.();
   configurarLogin();

@@ -1,7 +1,4 @@
-/*
-  session.js
-  Controle simples de sessão local para apresentação.
-*/
+
 (function () {
   const TOKEN_KEY = "token";
   const USUARIO_KEY = "usuario";

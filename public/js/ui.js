@@ -1,7 +1,4 @@
-/*
-  ui.js
-  Mensagens visuais e pequenos estados de interface.
-*/
+
 (function () {
   function garantirToastContainer() {
     let container = document.querySelector(".toast-container");

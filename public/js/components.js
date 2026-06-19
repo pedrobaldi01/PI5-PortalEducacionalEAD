@@ -14,7 +14,10 @@ async function carregarComponentes() {
   }
 
   if (tipoPagina === "professor") {
-    await carregarHTML("sidebar-container", "components/sidebar-professor.html");
+    await carregarHTML(
+      "sidebar-container",
+      "components/sidebar-professor.html",
+    );
   }
 
   if (tipoPagina === "admin") {
@@ -25,6 +28,7 @@ async function carregarComponentes() {
   carregarUsuarioHeader();
   configurarLogoInicial();
   configurarLogout();
+  configurarMenuMobile();
 }
 
 async function carregarHTML(idContainer, caminhoArquivo) {
@@ -59,7 +63,10 @@ function marcarLinkAtivo() {
   links.forEach((link) => {
     const href = link.getAttribute("href");
 
-    if (href === hashAtual || (hashAtual === "#inicio" && href.includes(".html"))) {
+    if (
+      href === hashAtual ||
+      (hashAtual === "#inicio" && href.includes(".html"))
+    ) {
       link.classList.add("active");
     } else {
       link.classList.remove("active");
@@ -78,7 +85,10 @@ function configurarLogout() {
 
   botaoSair.addEventListener("click", () => {
     window.Session?.limparSessao?.();
-    window.Session?.salvarMensagemFlash?.("Sessão encerrada com sucesso.", "info");
+    window.Session?.salvarMensagemFlash?.(
+      "Sessão encerrada com sucesso.",
+      "info",
+    );
     window.location.href = "login.html";
   });
 }
@@ -119,8 +129,75 @@ function formatarPerfil(perfil) {
     professor: "Professor",
     administrador: "Administrador",
     admin: "Administrador",
-    coordenador: "Coordenador"
+    coordenador: "Coordenador",
   };
 
   return nomes[perfil] || perfil;
+}
+
+function configurarMenuMobile() {
+  const botaoMenu = document.getElementById("menu-toggle");
+  const sidebarContainer = document.getElementById("sidebar-container");
+
+  if (!botaoMenu || !sidebarContainer) {
+    return;
+  }
+
+  function abrirMenu() {
+    document.body.classList.add("menu-open");
+    botaoMenu.setAttribute("aria-expanded", "true");
+    botaoMenu.setAttribute("aria-label", "Fechar menu de navegação");
+  }
+
+  function fecharMenu() {
+    document.body.classList.remove("menu-open");
+    botaoMenu.setAttribute("aria-expanded", "false");
+    botaoMenu.setAttribute("aria-label", "Abrir menu de navegação");
+  }
+
+  function alternarMenu() {
+    if (document.body.classList.contains("menu-open")) {
+      fecharMenu();
+    } else {
+      abrirMenu();
+    }
+  }
+
+  botaoMenu.addEventListener("click", (event) => {
+    event.stopPropagation();
+    alternarMenu();
+  });
+
+  sidebarContainer.addEventListener("click", (event) => {
+    const link = event.target.closest("a");
+
+    if (link) {
+      fecharMenu();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    const clicouNoMenu = sidebarContainer.contains(event.target);
+    const clicouNoBotao = botaoMenu.contains(event.target);
+
+    if (
+      document.body.classList.contains("menu-open") &&
+      !clicouNoMenu &&
+      !clicouNoBotao
+    ) {
+      fecharMenu();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      fecharMenu();
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 980) {
+      fecharMenu();
+    }
+  });
 }
