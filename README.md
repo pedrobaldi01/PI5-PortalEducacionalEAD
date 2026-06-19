@@ -1,18 +1,8 @@
-# Portal Educacional EAD.
+# Portal Educacional EAD
 
 Projeto acadêmico de um **Portal Educacional EAD**, inspirado em plataformas como Moodle, com áreas separadas para **alunos**, **professores** e **administradores**.
 
-O projeto está em fase inicial e atualmente possui:
-
-- uma API em Node.js/Express;
-- autenticação simples com token;
-- conexão com banco MySQL;
-- dados persistidos nas tabelas do schema local;
-- estrutura inicial de frontend em HTML, CSS e JavaScript;
-- páginas separadas para aluno, professor e administrador;
-- componentes visuais reutilizáveis para header, sidebar e footer.
-
-> Observação: neste momento, frontend e backend ainda estão em desenvolvimento e podem não estar totalmente integrados entre si. A integração completa será feita em uma etapa posterior.
+A aplicação foi desenvolvida para rodar localmente durante a apresentação, com backend em Node.js/Express, frontend em HTML/CSS/JavaScript e banco de dados MySQL local.
 
 ---
 
@@ -24,92 +14,199 @@ O projeto está em fase inicial e atualmente possui:
 - HTML5
 - CSS3
 - MySQL
+- JWT/token de autenticação
+- MySQL Workbench para criação e manutenção do banco local
 
 ---
 
 ## Objetivo do sistema
 
-A ideia do sistema é criar um portal educacional onde diferentes perfis tenham acessos e funções específicas.
+O objetivo do sistema é oferecer uma base funcional de portal educacional, com fluxos separados por perfil.
 
 ### Aluno
 
-O aluno deverá conseguir:
+O aluno consegue:
 
-- visualizar disciplinas em que está matriculado;
-- acessar conteúdos publicados pelos professores;
-- visualizar atividades;
-- acompanhar notas lançadas pelos professores.
+- acessar sua área após login;
+- visualizar turmas e disciplinas em que está matriculado;
+- acessar conteúdos/materiais publicados pelos professores;
+- visualizar atividades disponíveis;
+- enviar resposta em texto para atividades;
+- acompanhar notas lançadas pelos professores;
+- visualizar avisos publicados para suas turmas.
 
 ### Professor
 
-O professor deverá conseguir:
+O professor consegue:
 
-- visualizar as disciplinas em que foi vinculado;
-- publicar conteúdos;
-- criar atividades;
-- lançar notas dos alunos.
+- acessar sua área após login;
+- visualizar turmas e disciplinas vinculadas a ele;
+- publicar conteúdos/materiais por turma;
+- criar atividades avaliativas ou não avaliativas;
+- acompanhar envios de atividades feitos pelos alunos;
+- visualizar a resposta textual enviada pelo aluno;
+- lançar notas para alunos da turma da atividade, mesmo que o aluno não tenha enviado resposta;
+- publicar avisos para suas turmas;
+- remover conteúdos, atividades e avisos quando permitido.
 
 ### Administrador
 
-O administrador deverá conseguir:
+O administrador consegue:
 
-- cadastrar usuários;
+- acessar sua área após login;
+- cadastrar alunos;
+- cadastrar professores;
 - cadastrar cursos;
-- cadastrar turmas;
 - cadastrar disciplinas;
-- organizar vínculos entre alunos, professores, turmas e disciplinas.
+- cadastrar turmas;
+- criar matrículas de alunos em turmas;
+- vincular disciplinas a cursos;
+- listar os dados cadastrados;
+- remover/inativar alunos e professores;
+- remover registros administrativos quando permitido pelo backend.
 
 ---
 
 ## Estado atual do projeto
 
-Nesta versão, o projeto possui uma base funcional de backend e uma primeira estrutura de frontend.
+O projeto possui backend, banco e frontend integrados para os principais fluxos da aplicação.
 
-### Já existe no backend
+### Backend
 
-- Login básico;
+O backend possui:
+
+- API em Node.js/Express;
 - autenticação por token;
-- cadastro e listagem de alunos;
+- controle de perfis;
+- conexão com MySQL;
+- senhas com hash para novos usuários cadastrados pela API;
+- login compatível com senhas antigas em texto puro para facilitar testes;
+- rotas para usuários, cursos, disciplinas, turmas, matrículas, materiais, atividades, envios, notas e avisos;
+- validações e regras de permissão por perfil;
+- frontend servido localmente pela aplicação Express.
+
+### Frontend
+
+O frontend possui:
+
+- tela de login integrada com `/auth/login`;
+- sessão salva no `localStorage`;
+- proteção de páginas por perfil;
+- redirecionamento automático conforme perfil;
+- header, sidebar e footer reutilizáveis;
+- menu hambúrguer em telas menores;
+- layout responsivo;
+- área do aluno integrada ao banco;
+- área do professor integrada ao banco;
+- área do administrador integrada ao banco;
+- mensagens de carregamento, sucesso, erro e estado vazio;
+- formulários reais integrados às rotas da API;
+- renderização dinâmica dos dados vindos do backend.
+
+### Banco de dados
+
+O projeto usa MySQL com o schema definido em:
+
+```txt
+database/DB.sql
+```
+
+O banco principal usado localmente é:
+
+```txt
+escola_ead
+```
+
+O schema possui tabelas para:
+
+- usuários;
+- alunos;
+- professores;
+- administradores;
+- coordenadores;
+- cursos;
+- disciplinas;
+- vínculos curso-disciplina;
+- turmas;
+- matrículas;
+- arquivos;
+- materiais didáticos;
+- atividades;
+- envios de atividades;
+- notas;
+- avisos.
+
+---
+
+## Funcionalidades já implementadas
+
+### Autenticação
+
+- Login por `login` e `senha`;
+- token de autenticação;
+- armazenamento de sessão no navegador;
+- logout;
+- exibição do usuário logado no header;
+- bloqueio de páginas internas sem login;
+- bloqueio por perfil de acesso.
+
+### Área do aluno
+
+- Listagem de turmas/disciplinas matriculadas;
+- listagem de conteúdos/materiais;
+- listagem de atividades;
+- envio de resposta em texto para atividades;
+- exibição de envio já realizado;
+- listagem de notas;
+- listagem de avisos;
+- estados vazios quando não há dados.
+
+### Área do professor
+
+- Listagem de turmas e disciplinas;
+- publicação de conteúdos;
+- criação de atividades;
+- listagem de conteúdos publicados;
+- listagem de atividades criadas;
+- consulta de alunos por turma;
+- consulta de envios de atividades;
+- visualização da resposta textual do aluno;
+- lançamento de notas por atividade e aluno;
+- criação de avisos para turmas;
+- listagem de avisos publicados;
+- remoção de conteúdos, atividades e avisos quando permitido.
+
+### Área do administrador
+
+- Cadastro e listagem de alunos;
 - cadastro e listagem de professores;
 - cadastro e listagem de cursos;
 - cadastro e listagem de disciplinas;
 - cadastro e listagem de turmas;
-- persistência em banco MySQL usando o schema `database/DB.sql`;
-- rotas iniciais para matrículas, materiais, atividades, envios, notas e avisos.
+- criação e listagem de matrículas;
+- vínculo de disciplinas a cursos;
+- listagem de vínculos curso-disciplina;
+- remoção/inativação de alunos e professores;
+- remoção de registros quando permitido pela regra do backend.
 
-### Já existe no frontend
+### Responsividade
 
-- tela de login integrada com a rota `/auth/login`;
-- painel do aluno;
-- painel do professor;
-- painel do administrador;
-- header separado em componente HTML;
-- sidebar separada por tipo de usuário;
-- footer separado em componente HTML;
-- CSS base com identidade visual própria;
-- JavaScript para carregamento de componentes;
-- armazenamento do token e dos dados do usuário no `localStorage` após o login.
-
-### Ainda não existe ou ainda não está finalizado
-
-- integração completa entre frontend e backend;
-- conexão dos formulários administrativos com as rotas reais da API;
-- carregamento de dados reais nos painéis de aluno, professor e administrador;
-- upload de arquivos;
-- envio real de atividades;
-- lançamento real de notas pelo frontend;
-- edição e exclusão de registros;
-- controle completo de permissões por tela;
-- dashboard com dados reais vindos da API.
+- Header fixo;
+- sidebar lateral no desktop;
+- menu hambúrguer em tablet/celular;
+- cards adaptáveis;
+- formulários em coluna em telas menores;
+- tabelas com rolagem horizontal;
+- botões adaptados para telas pequenas.
 
 ---
 
 ## Estrutura de pastas
 
-A estrutura atual do projeto está organizada da seguinte forma:
+A estrutura principal do projeto está organizada assim:
 
 ```txt
-PI5 - base/
+PI5-PortalEducacionalEAD/
 ├── database/
 │   └── DB.sql
 │
@@ -137,14 +234,21 @@ PI5 - base/
 │   │   └── styles.css
 │   │
 │   └── js/
+│       ├── api.js
+│       ├── session.js
+│       ├── ui.js
 │       ├── auth.js
-│       ├── app.js
-│       ├── admin.js
-│       └── components.js
+│       ├── components.js
+│       ├── aluno.js
+│       ├── professor.js
+│       └── admin.js
 │
 ├── src/
 │   ├── app.js
 │   ├── server.js
+│   │
+│   ├── config/
+│   │   └── env.js
 │   │
 │   ├── controllers/
 │   │   ├── alunos.controller.js
@@ -165,7 +269,8 @@ PI5 - base/
 │   │   └── memoria.js
 │   │
 │   ├── middlewares/
-│   │   └── auth.middleware.js
+│   │   ├── auth.middleware.js
+│   │   └── perfil.middleware.js
 │   │
 │   ├── routes/
 │   │   ├── alunos.routes.js
@@ -181,7 +286,13 @@ PI5 - base/
 │   │   ├── professores.routes.js
 │   │   └── turmas.routes.js
 │   │
+│   ├── services/
+│   │   └── acesso.service.js
+│   │
 │   └── utils/
+│       ├── app-error.js
+│       ├── async-handler.js
+│       ├── controller-helpers.js
 │       ├── mapeadores.js
 │       ├── senhas.js
 │       ├── tokens.js
@@ -189,7 +300,8 @@ PI5 - base/
 │
 ├── package.json
 ├── package-lock.json
-└── README.md
+├── README.md
+└── .env
 ```
 
 ---
@@ -198,13 +310,13 @@ PI5 - base/
 
 ### `public/`
 
-Contém os arquivos do frontend.
+Contém o frontend da aplicação.
 
-Nesta pasta ficam as páginas HTML, os arquivos CSS, os scripts do navegador e os componentes reutilizáveis.
+Inclui as páginas HTML, os componentes reutilizáveis, o CSS e os scripts do navegador.
 
 ### `public/components/`
 
-Contém partes reutilizáveis da interface:
+Contém os componentes reaproveitados pelas páginas:
 
 - `header.html`;
 - `footer.html`;
@@ -212,172 +324,256 @@ Contém partes reutilizáveis da interface:
 - `sidebar-professor.html`;
 - `sidebar-admin.html`.
 
-Esses arquivos existem para evitar repetir o mesmo código em várias páginas. Assim, se for necessário alterar o header, por exemplo, basta editar `header.html`.
+Esses componentes evitam duplicação de código. Alterações no header, footer ou menu podem ser feitas em um único arquivo.
 
-### `public/css/`
+### `public/css/styles.css`
 
-Contém o arquivo principal de estilos do frontend.
+Arquivo principal de estilos do sistema.
 
-### `public/js/`
+Define:
 
-Contém os scripts do frontend.
+- identidade visual;
+- cores;
+- layout;
+- cards;
+- formulários;
+- tabelas;
+- feedbacks;
+- responsividade;
+- menu hambúrguer.
+
+### `public/js/api.js`
+
+Centraliza as chamadas ao backend.
+
+Responsável por:
+
+- montar requisições HTTP;
+- enviar token automaticamente;
+- tratar respostas JSON;
+- tratar erros de autenticação ou falha de API.
+
+### `public/js/session.js`
+
+Controla a sessão no navegador.
+
+Responsável por:
+
+- salvar token;
+- salvar usuário;
+- obter perfil;
+- proteger páginas;
+- redirecionar por perfil;
+- fazer logout.
+
+### `public/js/ui.js`
+
+Centraliza funções visuais reutilizáveis.
 
 Exemplos:
 
-- carregamento dos componentes HTML;
-- lógica inicial de login;
-- scripts provisórios das telas;
-- funções que futuramente irão se comunicar com a API.
+- loading;
+- mensagens de sucesso;
+- mensagens de erro;
+- estados vazios;
+- feedbacks de formulário.
+
+### `public/js/components.js`
+
+Carrega componentes HTML com `fetch`.
+
+Também configura:
+
+- header;
+- footer;
+- sidebar correta por perfil;
+- nome do usuário logado;
+- botão de logout;
+- link ativo da navegação;
+- menu hambúrguer.
+
+### `public/js/aluno.js`
+
+Controla a tela do aluno.
+
+Carrega e renderiza:
+
+- turmas;
+- matrículas;
+- atividades;
+- conteúdos;
+- notas;
+- avisos;
+- envios de atividade.
+
+Também envia respostas em texto para atividades.
+
+### `public/js/professor.js`
+
+Controla a tela do professor.
+
+Gerencia:
+
+- turmas;
+- conteúdos;
+- atividades;
+- alunos por turma;
+- envios de atividade;
+- notas;
+- avisos.
+
+### `public/js/admin.js`
+
+Controla a tela administrativa.
+
+Gerencia:
+
+- alunos;
+- professores;
+- cursos;
+- disciplinas;
+- turmas;
+- matrículas;
+- vínculos curso-disciplina.
 
 ### `src/`
 
 Contém o backend da aplicação.
 
-### `src/server.js`
-
-Arquivo responsável por iniciar o servidor.
-
 ### `src/app.js`
 
-Arquivo responsável por configurar o Express, registrar middlewares e conectar as rotas da API.
+Configura o Express, middlewares, rotas da API e o frontend estático.
+
+### `src/server.js`
+
+Inicializa o servidor local.
 
 ### `src/controllers/`
 
-Contém as funções que recebem as requisições e retornam respostas.
-
-Exemplos:
-
-- criar aluno;
-- listar alunos;
-- criar curso;
-- fazer login.
+Contém as funções que processam as requisições e retornam as respostas.
 
 ### `src/routes/`
 
-Contém os arquivos que definem os caminhos da API.
-
-Exemplos:
-
-```txt
-/auth/login
-/alunos
-/professores
-/cursos
-/disciplinas
-/turmas
-/matriculas
-/materiais
-/atividades
-/envios-atividades
-/notas
-/avisos
-```
+Define os caminhos da API.
 
 ### `src/database/conexao.js`
 
-Contém o pool de conexão com MySQL e helpers para executar queries e transações.
-
-### `src/database/memoria.js`
-
-Arquivo legado mantido apenas como referência da primeira versão em memória. A API principal usa o banco MySQL.
+Configura a conexão com o MySQL.
 
 ### `src/middlewares/`
 
-Contém funções intermediárias, como a verificação de autenticação.
+Contém middlewares de autenticação e permissão por perfil.
+
+### `src/services/acesso.service.js`
+
+Centraliza regras de acesso, como verificar se um professor pertence a determinada turma ou se um aluno está matriculado.
 
 ### `src/utils/`
 
-Contém funções auxiliares e validações reutilizáveis.
-
-### `database/`
-
-Contém arquivos relacionados ao banco de dados, como scripts SQL.
-
-### `docs/`
-
-Contém materiais de documentação, diagramas ou imagens auxiliares do projeto.
-
-### `old/`
-
-Contém arquivos antigos mantidos apenas como referência temporária.
-
-Esses arquivos não fazem parte da versão atual principal do sistema.
+Contém funções auxiliares para validações, tokens, senhas, tratamento de erros e mapeamento de dados.
 
 ---
 
-## Como rodar o projeto
+## Como rodar o projeto localmente
 
-### 1. Instalar as dependências
+### 1. Instalar dependências
+
+Na raiz do projeto, execute:
 
 ```bash
 npm install
 ```
 
-### 2. Criar o arquivo `.env`
+### 2. Criar o banco MySQL
 
-Na raiz do projeto, crie um arquivo chamado `.env` com:
+Abra o MySQL Workbench e execute o script:
+
+```txt
+database/DB.sql
+```
+
+Esse script cria o banco:
+
+```txt
+escola_ead
+```
+
+e suas tabelas.
+
+### 3. Criar o arquivo `.env`
+
+Na raiz do projeto, crie um arquivo chamado:
+
+```txt
+.env
+```
+
+Exemplo:
 
 ```env
 PORT=3000
+
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=sua_senha
+DB_PASSWORD=sua_senha_do_mysql
 DB_NAME=escola_ead
-TOKEN_SECRET=troque-este-segredo
+
+TOKEN_SECRET=portal_ead_chave_secreta_local
 ```
 
-Antes de iniciar a API, execute o script `database/DB.sql` no MySQL para criar o banco `escola_ead` e suas tabelas.
+O arquivo `.env` deve ficar no mesmo nível de `package.json`.
 
-### 3. Iniciar o servidor
+### 4. Rodar o servidor
+
+Execute:
 
 ```bash
 npm start
 ```
 
-Ou:
+ou:
 
 ```bash
 npm run dev
 ```
 
-Atualmente, os dois comandos executam o mesmo arquivo:
+Se tudo estiver correto, o terminal mostrará algo parecido com:
 
-```bash
-node src/server.js
+```txt
+Servidor rodando em http://localhost:3000
 ```
 
-Se tudo estiver correto, o terminal deverá mostrar algo parecido com:
+Depois acesse:
 
-```bash
-Servidor rodando em http://localhost:3000
+```txt
+http://localhost:3000
 ```
 
 ---
 
 ## Usuário inicial para testes
 
-O arquivo `database/DB.sql` cria um usuário administrador inicial para testar o login da API:
+O script `database/DB.sql` cria um administrador inicial.
 
-```json
-{
-  "login": "admin",
-  "email": "admin@portal.local",
-  "senha": "123456"
-}
+```txt
+login: admin
+senha: 123456
 ```
+
+Esse usuário pode ser usado para entrar na área administrativa e cadastrar outros usuários.
 
 ---
 
-## Funcionamento atual da autenticação
+## Autenticação
 
-O login é feito pela rota:
+O login é feito por:
 
 ```txt
 POST /auth/login
 ```
 
-Exemplo de requisição:
+Exemplo:
 
 ```bash
 curl -X POST http://localhost:3000/auth/login \
@@ -388,7 +584,7 @@ curl -X POST http://localhost:3000/auth/login \
   }'
 ```
 
-A resposta retorna um token:
+Resposta esperada:
 
 ```json
 {
@@ -403,24 +599,17 @@ A resposta retorna um token:
 }
 ```
 
-Esse token deve ser enviado nas rotas protegidas pelo cabeçalho:
+O token deve ser enviado nas rotas protegidas:
 
 ```txt
 Authorization: Bearer SEU_TOKEN_AQUI
 ```
 
-No frontend, o arquivo `public/js/auth.js` salva o token e os dados do usuário no `localStorage` após o login:
-
-```txt
-token
-usuario
-```
-
-Esse armazenamento permite manter a sessão no navegador e usar as informações do usuário nas telas do sistema.
+No frontend, esse processo é feito automaticamente pelos arquivos `auth.js`, `session.js` e `api.js`.
 
 ---
 
-## Rotas disponíveis na API
+## Rotas principais da API
 
 ### Autenticação
 
@@ -432,193 +621,193 @@ GET  /auth/me
 ### Alunos
 
 ```txt
-GET  /alunos
-POST /alunos
+GET    /alunos
+POST   /alunos
+GET    /alunos/:id
+PUT    /alunos/:id
+DELETE /alunos/:id
 ```
 
 ### Professores
 
 ```txt
-GET  /professores
-POST /professores
+GET    /professores
+GET    /professores/me
+POST   /professores
+GET    /professores/:id
+PUT    /professores/:id
+DELETE /professores/:id
 ```
 
 ### Cursos
 
 ```txt
-GET  /cursos
-POST /cursos
+GET    /cursos
+POST   /cursos
+GET    /cursos/:id
+PUT    /cursos/:id
+DELETE /cursos/:id
+GET    /cursos/:cursoId/disciplinas
+POST   /cursos/:cursoId/disciplinas
+DELETE /cursos/:cursoId/disciplinas/:disciplinaId
 ```
 
 ### Disciplinas
 
 ```txt
-GET  /disciplinas
-POST /disciplinas
+GET    /disciplinas
+POST   /disciplinas
+GET    /disciplinas/:id
+PUT    /disciplinas/:id
+DELETE /disciplinas/:id
 ```
 
 ### Turmas
 
 ```txt
-GET  /turmas
-POST /turmas
+GET    /turmas
+GET    /turmas/minhas
+GET    /turmas/:id
+POST   /turmas
+PUT    /turmas/:id
+DELETE /turmas/:id
+GET    /turmas/:turmaId/alunos
+GET    /turmas/:turmaId/materiais
+GET    /turmas/:turmaId/atividades
+GET    /turmas/:turmaId/avisos
 ```
 
 ### Matrículas
 
 ```txt
-GET  /matriculas
-POST /matriculas
+GET    /matriculas
+GET    /matriculas/minhas
+POST   /matriculas
+GET    /matriculas/:id
+PUT    /matriculas/:id/status
+DELETE /matriculas/:id
 ```
-
-Usada para vincular alunos às turmas.
 
 ### Materiais
 
 ```txt
-GET  /materiais
-POST /materiais
+GET    /materiais
+POST   /materiais
+GET    /materiais/:id
+PUT    /materiais/:id
+DELETE /materiais/:id
 ```
-
-Usada para cadastrar e listar materiais didáticos de uma turma.
 
 ### Atividades
 
 ```txt
-GET  /atividades
-POST /atividades
+GET    /atividades
+POST   /atividades
+GET    /atividades/:id
+PUT    /atividades/:id
+DELETE /atividades/:id
 ```
-
-Usada para cadastrar e listar atividades criadas por professores.
 
 ### Envios de atividades
 
 ```txt
 GET  /envios-atividades
+GET  /envios-atividades/meus
 POST /envios-atividades
+GET  /envios-atividades/:id
+PUT  /envios-atividades/:id
 ```
-
-Usada para registrar e listar entregas de atividades feitas pelos alunos.
 
 ### Notas
 
 ```txt
-GET  /notas
-POST /notas
+GET    /notas
+GET    /notas/minhas
+POST   /notas
+GET    /notas/:id
+PUT    /notas/:id
+DELETE /notas/:id
 ```
-
-Usada para lançar e listar notas de atividades.
 
 ### Avisos
 
 ```txt
-GET  /avisos
-POST /avisos
+GET    /avisos
+POST   /avisos
+GET    /avisos/:id
+PUT    /avisos/:id
+DELETE /avisos/:id
 ```
-
-Usada para publicar e listar avisos de uma turma.
-
-As rotas de alunos, professores, cursos, disciplinas, turmas, matrículas, materiais, atividades, envios, notas e avisos exigem autenticação.
 
 ---
 
-## Exemplos de uso da API
+## Fluxo básico de uso
 
-### Criar aluno
+### Fluxo do administrador
 
-```bash
-curl -X POST http://localhost:3000/alunos \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
-  -d '{
-    "nome": "Ana Souza",
-    "cpf": "12345678900",
-    "dataNascimento": "2000-01-10",
-    "email": "ana@exemplo.com",
-    "telefone": "54999999999",
-    "endereco": "Rua A",
-    "login": "ana",
-    "senha": "123456"
-  }'
-```
+1. Fazer login como administrador.
+2. Cadastrar professores.
+3. Cadastrar alunos.
+4. Cadastrar cursos.
+5. Cadastrar disciplinas.
+6. Cadastrar turmas.
+7. Matricular alunos nas turmas.
+8. Vincular disciplinas aos cursos.
 
-### Criar professor
+### Fluxo do professor
 
-```bash
-curl -X POST http://localhost:3000/professores \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
-  -d '{
-    "nome": "Carlos Lima",
-    "cpf": "98765432100",
-    "especialidade": "Programação Web",
-    "email": "carlos@exemplo.com",
-    "telefone": "54988888888",
-    "login": "carlos",
-    "senha": "123456"
-  }'
-```
+1. Fazer login como professor.
+2. Visualizar suas turmas.
+3. Publicar conteúdos.
+4. Criar atividades.
+5. Publicar avisos.
+6. Acompanhar envios dos alunos.
+7. Lançar notas.
 
-### Criar curso
+### Fluxo do aluno
 
-```bash
-curl -X POST http://localhost:3000/cursos \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
-  -d '{
-    "nome": "Técnico em Informática",
-    "descricao": "Curso voltado à formação técnica na área de tecnologia.",
-    "cargaHorariaTotal": 1200,
-    "categoria": "Tecnologia",
-    "status": "ativo"
-  }'
-```
-
-### Criar disciplina
-
-```bash
-curl -X POST http://localhost:3000/disciplinas \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
-  -d '{
-    "nome": "Programação Web",
-    "descricao": "Introdução ao desenvolvimento de aplicações web.",
-    "cargaHoraria": 60,
-    "professorResponsavelId": 1
-  }'
-```
-
-### Criar turma
-
-```bash
-curl -X POST http://localhost:3000/turmas \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
-  -d '{
-    "codigo": "INFO-2026-A",
-    "nome": "2º Info A",
-    "disciplinaId": 1,
-    "professorId": 1,
-    "periodoLetivo": "2026/1",
-    "dataInicio": "2026-02-01",
-    "dataTermino": "2026-07-01"
-  }'
-```
+1. Fazer login como aluno.
+2. Ver turmas e disciplinas.
+3. Acessar conteúdos.
+4. Visualizar atividades.
+5. Enviar resposta em texto.
+6. Ver notas.
+7. Ver avisos.
 
 ---
 
 ## Sobre o frontend
 
-O frontend está organizado em páginas separadas por perfil:
+O frontend foi desenvolvido em HTML, CSS e JavaScript puro.
+
+Ele não acessa o banco diretamente. O fluxo é:
 
 ```txt
-login.html       → tela de login
-aluno.html       → painel do aluno
-professor.html   → painel do professor
-admin.html       → painel administrativo
+Frontend → Backend/API → MySQL
 ```
 
-As páginas utilizam componentes HTML separados:
+O frontend usa:
+
+- `api.js` para chamadas HTTP;
+- `session.js` para sessão;
+- `ui.js` para feedback visual;
+- `components.js` para carregar header, footer e sidebar;
+- `aluno.js`, `professor.js` e `admin.js` para regras específicas de cada perfil.
+
+As páginas principais são:
+
+```txt
+login.html
+aluno.html
+professor.html
+admin.html
+```
+
+---
+
+## Componentes reutilizáveis
+
+O sistema usa componentes HTML separados:
 
 ```txt
 components/header.html
@@ -628,56 +817,54 @@ components/sidebar-professor.html
 components/sidebar-admin.html
 ```
 
-O carregamento desses componentes é feito via JavaScript, usando `fetch`.
+Eles são carregados via `fetch` pelo `components.js`.
 
-Por isso, ao testar apenas o frontend, é recomendado rodar o projeto por um servidor local. Abrir os arquivos diretamente com `file:///` pode impedir o carregamento dos componentes.
-
----
-
-## Observação sobre integração frontend/backend
-
-Neste momento, o frontend serve principalmente como protótipo visual e estrutural do portal.
-
-O login já chama a rota real `/auth/login` e salva o token no navegador. As demais telas ainda são majoritariamente visuais: os formulários exibem ações simuladas e ainda precisam ser conectados às rotas reais da API.
-
-A integração final entre painéis, formulários, permissões e dados reais ainda precisa ser revisada.
+Isso permite alterar header, footer ou menus em um único arquivo, sem editar todas as páginas.
 
 ---
 
-## Observação sobre o banco de dados
+## Responsividade
 
-O backend principal usa MySQL por meio do arquivo `src/database/conexao.js`.
+A interface possui ajustes para telas menores:
 
-O schema de referência fica em `database/DB.sql` e foi organizado para atender aos fluxos dos diagramas de atividades e classes:
-
-- cadastro e login de usuários;
-- alunos, professores, administradores e coordenadores;
-- cursos, disciplinas, turmas e matrículas;
-- materiais didáticos, atividades, envios, notas e avisos.
-
-As senhas cadastradas pela API são gravadas com hash. O login ainda aceita senhas antigas em texto puro para facilitar migração de dados de teste.
+- menu hambúrguer para abrir a sidebar;
+- header compacto;
+- botão de logout mantido no canto direito;
+- cards adaptados para coluna única;
+- formulários reorganizados em uma coluna;
+- tabelas com rolagem horizontal;
+- menu lateral oculto em tablet/celular.
 
 ---
 
-## Ordem recomendada para testes da API
+## Observações importantes
 
-1. Fazer login com o usuário administrador.
-2. Copiar o token retornado.
-3. Criar um professor.
-4. Criar um curso.
-5. Criar uma disciplina.
-6. Criar uma turma.
-7. Criar um aluno.
-8. Listar os dados cadastrados.
+- O sistema foi pensado para rodar localmente para apresentação acadêmica.
+- O banco deve estar criado no MySQL antes de iniciar o servidor.
+- O arquivo `.env` não deve ser enviado para repositórios públicos.
+- O frontend não usa dados simulados nas telas principais: os dados exibidos vêm da API e do banco.
+- Upload real de arquivos ainda não é o foco principal; materiais podem ser cadastrados com link ou `arquivoId`.
+- A resposta de atividade pelo aluno foi implementada por campo de texto.
+- A remoção de alunos e professores pode funcionar como inativação, para evitar quebra de vínculos históricos.
+
+---
+
+## Limitações atuais
+
+- O upload completo de arquivos ainda pode ser melhorado no frontend.
+- Algumas ações de edição podem depender de aprimoramento visual nas telas.
+- O projeto não utiliza framework frontend.
+- O sistema é voltado para execução local e apresentação, não para produção pública.
+- Ainda podem ser feitos refinamentos de usabilidade, validação e acessibilidade.
 
 ---
 
 ## Próximos passos sugeridos
 
-- conectar os formulários administrativos às rotas reais da API;
-- carregar dados reais nos painéis de aluno, professor e administrador;
-- proteger páginas por perfil de usuário;
-- adicionar edição e exclusão de registros;
-- melhorar validações e mensagens de erro;
-- implementar upload real de arquivos;
-- criar permissões detalhadas por perfil.
+- Melhorar o fluxo visual de edição de registros;
+- aprimorar upload de arquivos no frontend;
+- revisar mensagens de erro vindas da API;
+- melhorar acessibilidade;
+- criar roteiro de apresentação;
+- revisar todos os fluxos com dados reais no banco;
+- atualizar a documentação conforme ajustes finais.
