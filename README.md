@@ -865,6 +865,5 @@ A interface possui ajustes para telas menores:
 - aprimorar upload de arquivos no frontend;
 - revisar mensagens de erro vindas da API;
 - melhorar acessibilidade;
-- criar roteiro de apresentação;
 - revisar todos os fluxos com dados reais no banco;
 - atualizar a documentação conforme ajustes finais.
