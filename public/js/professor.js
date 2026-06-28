@@ -190,6 +190,7 @@ function renderTurmasProfessor() {
         .join("")}
     </div>
   `;
+  window.Paginacao?.aplicar(container, "professor-turmas", { tamanhoPagina: 10 });
 }
 
 function renderMateriaisProfessor() {
@@ -235,6 +236,8 @@ function renderMateriaisProfessor() {
       removerMaterial(botao.dataset.removerMaterial),
     );
   });
+
+  window.Paginacao?.aplicar(container, "professor-materiais", { tamanhoPagina: 10 });
 }
 
 function renderAtividadesProfessor() {
@@ -289,6 +292,8 @@ function renderAtividadesProfessor() {
       removerAtividade(botao.dataset.removerAtividade),
     );
   });
+
+  window.Paginacao?.aplicar(container, "professor-atividades", { tamanhoPagina: 10 });
 }
 
 async function carregarAlunosDaTurmaSelecionada() {
@@ -367,6 +372,7 @@ function renderAlunosProfessor(alunos) {
       </table>
     </div>
   `;
+  window.Paginacao?.aplicar(container, "professor-alunos", { tamanhoPagina: 10 });
 }
 
 function renderEnviosProfessor() {
@@ -417,6 +423,7 @@ function renderEnviosProfessor() {
         .join("")}
     </div>
   `;
+  window.Paginacao?.aplicar(container, "professor-envios", { tamanhoPagina: 10 });
 }
 
 function renderNotasProfessor() {
@@ -458,6 +465,7 @@ function renderNotasProfessor() {
       </table>
     </div>
   `;
+  window.Paginacao?.aplicar(container, "professor-notas", { tamanhoPagina: 10 });
 }
 
 function renderAvisosProfessor() {
@@ -502,6 +510,7 @@ function renderAvisosProfessor() {
         .join("")}
     </div>
   `;
+  window.Paginacao?.aplicar(container, "professor-avisos", { tamanhoPagina: 10 });
 }
 
 function preencherSelectsProfessor() {

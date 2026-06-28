@@ -185,6 +185,7 @@
       escapar(aluno.login),
       botoesAcao("aluno", aluno.id)
     ]));
+    window.Paginacao?.aplicar(container, "admin-alunos", { tamanhoPagina: 10 });
   }
 
   function renderProfessores() {
@@ -205,6 +206,7 @@
       escapar(professor.login),
       botoesAcao("professor", professor.id)
     ]));
+    window.Paginacao?.aplicar(container, "admin-professores", { tamanhoPagina: 10 });
   }
 
   function renderCursos() {
@@ -225,6 +227,7 @@
       badgeStatus(curso.status),
       botoesAcao("curso", curso.id)
     ]));
+    window.Paginacao?.aplicar(container, "admin-cursos", { tamanhoPagina: 10 });
   }
 
   function renderDisciplinas() {
@@ -244,6 +247,7 @@
       escapar(disciplina.professorResponsavel || "-"),
       botoesAcao("disciplina", disciplina.id)
     ]));
+    window.Paginacao?.aplicar(container, "admin-disciplinas", { tamanhoPagina: 10 });
   }
 
   function renderTurmas() {
@@ -266,6 +270,7 @@
       badgeStatus(turma.status),
       botoesAcao("turma", turma.id)
     ]));
+    window.Paginacao?.aplicar(container, "admin-turmas", { tamanhoPagina: 10 });
   }
 
   function renderMatriculas() {
@@ -286,6 +291,7 @@
       badgeStatus(matricula.status),
       botoesAcao("matricula", matricula.id)
     ]));
+    window.Paginacao?.aplicar(container, "admin-matriculas", { tamanhoPagina: 10 });
   }
 
   function renderCursoDisciplinas() {
@@ -304,6 +310,7 @@
       escapar(vinculo.sequencia),
       `<button class="button button-small button-ghost-danger" type="button" data-action="remover-curso-disciplina" data-curso-id="${escaparAtributo(vinculo.cursoId)}" data-disciplina-id="${escaparAtributo(vinculo.disciplinaId)}">Remover</button>`
     ]));
+    window.Paginacao?.aplicar(container, "admin-curso-disciplinas", { tamanhoPagina: 10 });
   }
 
   function tabela(cabecalhos, linhas) {

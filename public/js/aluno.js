@@ -234,6 +234,8 @@ function renderDisciplinas(turmas, matriculas, erro) {
     `;
     })
     .join("");
+
+  window.Paginacao?.aplicar(container, "aluno-disciplinas", { tamanhoPagina: 10 });
 }
 
 function renderAtividades(atividades, notas, envios, erro) {
@@ -314,6 +316,7 @@ function renderAtividades(atividades, notas, envios, erro) {
         .join("")}
     </ul>
   `;
+  window.Paginacao?.aplicar(container, "aluno-atividades", { tamanhoPagina: 10 });
 }
 
 function renderConteudos(conteudos, turmas, erro) {
@@ -363,6 +366,7 @@ function renderConteudos(conteudos, turmas, erro) {
         .join("")}
     </ul>
   `;
+  window.Paginacao?.aplicar(container, "aluno-conteudos", { tamanhoPagina: 10 });
 }
 
 function renderNotas(notas, atividades, turmas, erro) {
@@ -422,6 +426,7 @@ function renderNotas(notas, atividades, turmas, erro) {
       </table>
     </div>
   `;
+  window.Paginacao?.aplicar(container, "aluno-notas", { tamanhoPagina: 10 });
 }
 
 function renderAvisos(avisos, turmas, erro) {
@@ -466,6 +471,7 @@ function renderAvisos(avisos, turmas, erro) {
         .join("")}
     </div>
   `;
+  window.Paginacao?.aplicar(container, "aluno-avisos", { tamanhoPagina: 10 });
 }
 
 function configurarEnvioAtividade() {

@@ -24,11 +24,12 @@ async function carregarComponentes() {
     await carregarHTML("sidebar-container", "components/sidebar-admin.html");
   }
 
-  marcarLinkAtivo();
   carregarUsuarioHeader();
   configurarLogoInicial();
   configurarLogout();
   configurarMenuMobile();
+  configurarNavegacaoPorSecoes();
+  marcarLinkAtivo();
 }
 
 async function carregarHTML(idContainer, caminhoArquivo) {
@@ -57,23 +58,13 @@ async function carregarHTML(idContainer, caminhoArquivo) {
 }
 
 function marcarLinkAtivo() {
-  const hashAtual = window.location.hash || "#inicio";
+  const secaoAtual = obterSecaoAtual();
   const links = document.querySelectorAll(".sidebar-nav a");
 
   links.forEach((link) => {
-    const href = link.getAttribute("href");
-
-    if (
-      href === hashAtual ||
-      (hashAtual === "#inicio" && href.includes(".html"))
-    ) {
-      link.classList.add("active");
-    } else {
-      link.classList.remove("active");
-    }
+    const nav = link.dataset.nav;
+    link.classList.toggle("active", nav === secaoAtual);
   });
-
-  window.addEventListener("hashchange", marcarLinkAtivo);
 }
 
 function configurarLogout() {
@@ -201,3 +192,242 @@ function configurarMenuMobile() {
     }
   });
 }
+
+function obterSecaoAtual() {
+  const hash = window.location.hash.replace("#", "").trim();
+  return hash || "inicio";
+}
+
+function configurarNavegacaoPorSecoes() {
+  const content = document.querySelector(".content");
+  const grid = content?.querySelector(":scope > .dashboard-grid");
+
+  if (!content || !grid) {
+    return;
+  }
+
+  const secoes = Array.from(grid.querySelectorAll(":scope > [id]"));
+
+  if (!secoes.length) {
+    return;
+  }
+
+  secoes.forEach((secao) => {
+    secao.classList.add("section-panel");
+  });
+
+  function encontrarSecao(secaoId) {
+    return secoes.find((secao) => secao.id === secaoId);
+  }
+
+  function aplicarSecao() {
+    let secaoAtual = obterSecaoAtual();
+    const ehInicio = secaoAtual === "inicio";
+
+    if (!ehInicio && !encontrarSecao(secaoAtual)) {
+      secaoAtual = "inicio";
+    }
+
+    const pageHeader = content.querySelector(":scope > .page-header");
+    const summaryGrid = content.querySelector(":scope > .summary-grid");
+
+    pageHeader?.classList.toggle("section-hidden", secaoAtual !== "inicio");
+    summaryGrid?.classList.toggle("section-hidden", secaoAtual !== "inicio");
+
+    grid.classList.toggle("section-hidden", secaoAtual === "inicio");
+    grid.classList.toggle("section-mode", secaoAtual !== "inicio");
+
+    secoes.forEach((secao) => {
+      const ativa = secao.id === secaoAtual;
+      secao.classList.toggle("section-hidden", secaoAtual === "inicio" || !ativa);
+      secao.classList.toggle("active-section", ativa);
+    });
+
+    marcarLinkAtivo();
+  }
+
+  aplicarSecao();
+  window.addEventListener("hashchange", aplicarSecao);
+
+  document.querySelectorAll(".sidebar-nav a[data-nav]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const nav = link.dataset.nav || "inicio";
+
+      if (nav === "inicio") {
+        event.preventDefault();
+        history.pushState(null, "", "#inicio");
+        window.dispatchEvent(new HashChangeEvent("hashchange"));
+        return;
+      }
+
+      if (encontrarSecao(nav)) {
+        event.preventDefault();
+        history.pushState(null, "", `#${nav}`);
+        window.dispatchEvent(new HashChangeEvent("hashchange"));
+      }
+    });
+  });
+}
+
+/* Paginação visual reutilizável para listas e tabelas renderizadas no frontend */
+(function configurarPaginacaoGlobal() {
+  if (window.Paginacao) {
+    return;
+  }
+
+  const estadoPaginas = new Map();
+
+  function encontrarItens(container) {
+    if (!container) return [];
+
+    const linhasTabela = Array.from(container.querySelectorAll("tbody tr"));
+    if (linhasTabela.length) return linhasTabela;
+
+    const seletores = [
+      ".detail-card",
+      ".course-card",
+      ".content-item",
+      ".notice-card",
+      ".activity-list > li",
+      ".simple-list > li",
+      ".content-list > li"
+    ];
+
+    for (const seletor of seletores) {
+      const itens = Array.from(container.querySelectorAll(seletor));
+      if (itens.length) return itens;
+    }
+
+    return [];
+  }
+
+  function criarControles({ chave, paginaAtual, totalPaginas, totalItens, tamanhoPagina }) {
+    const inicio = totalItens === 0 ? 0 : (paginaAtual - 1) * tamanhoPagina + 1;
+    const fim = Math.min(totalItens, paginaAtual * tamanhoPagina);
+
+    const botoes = [];
+
+    botoes.push(`
+      <button
+        class="pagination-button"
+        type="button"
+        data-pagination-key="${chave}"
+        data-pagination-page="${paginaAtual - 1}"
+        ${paginaAtual === 1 ? "disabled" : ""}
+      >
+        Anterior
+      </button>
+    `);
+
+    const janelas = new Set([1, totalPaginas, paginaAtual - 1, paginaAtual, paginaAtual + 1]);
+    const paginas = Array.from(janelas)
+      .filter((pagina) => pagina >= 1 && pagina <= totalPaginas)
+      .sort((a, b) => a - b);
+
+    let ultima = 0;
+    paginas.forEach((pagina) => {
+      if (pagina - ultima > 1) {
+        botoes.push(`<span class="pagination-ellipsis">...</span>`);
+      }
+
+      botoes.push(`
+        <button
+          class="pagination-button ${pagina === paginaAtual ? "active" : ""}"
+          type="button"
+          data-pagination-key="${chave}"
+          data-pagination-page="${pagina}"
+          ${pagina === paginaAtual ? "aria-current=\"page\"" : ""}
+        >
+          ${pagina}
+        </button>
+      `);
+
+      ultima = pagina;
+    });
+
+    botoes.push(`
+      <button
+        class="pagination-button"
+        type="button"
+        data-pagination-key="${chave}"
+        data-pagination-page="${paginaAtual + 1}"
+        ${paginaAtual === totalPaginas ? "disabled" : ""}
+      >
+        Próxima
+      </button>
+    `);
+
+    return `
+      <nav class="pagination" aria-label="Paginação da lista">
+        <p class="pagination-info">
+          Mostrando ${inicio}-${fim} de ${totalItens} registros
+        </p>
+        <div class="pagination-actions">
+          ${botoes.join("")}
+        </div>
+      </nav>
+    `;
+  }
+
+  function aplicar(container, chave, opcoes = {}) {
+    if (!container || !chave) return;
+
+    container.setAttribute("data-pagination-key-container", chave);
+
+    const tamanhoPagina = Number(opcoes.tamanhoPagina || opcoes.pageSize || 10);
+    const itens = encontrarItens(container);
+    const totalItens = itens.length;
+
+    container.querySelector(".pagination")?.remove();
+
+    if (totalItens <= tamanhoPagina) {
+      itens.forEach((item) => {
+        item.hidden = false;
+      });
+      estadoPaginas.set(chave, 1);
+      return;
+    }
+
+    const totalPaginas = Math.ceil(totalItens / tamanhoPagina);
+    const paginaSalva = estadoPaginas.get(chave) || 1;
+    const paginaAtual = Math.min(Math.max(1, paginaSalva), totalPaginas);
+    estadoPaginas.set(chave, paginaAtual);
+
+    const inicio = (paginaAtual - 1) * tamanhoPagina;
+    const fim = inicio + tamanhoPagina;
+
+    itens.forEach((item, index) => {
+      item.hidden = index < inicio || index >= fim;
+    });
+
+    container.insertAdjacentHTML(
+      "beforeend",
+      criarControles({ chave, paginaAtual, totalPaginas, totalItens, tamanhoPagina })
+    );
+  }
+
+  function trocarPagina(chave, pagina) {
+    const numeroPagina = Number(pagina);
+    if (!chave || !Number.isFinite(numeroPagina)) return;
+
+    estadoPaginas.set(chave, numeroPagina);
+
+    const container = document.querySelector(`[data-pagination-key-container="${CSS.escape(chave)}"]`);
+    if (!container) return;
+
+    aplicar(container, chave);
+  }
+
+  document.addEventListener("click", (event) => {
+    const botao = event.target.closest("[data-pagination-key][data-pagination-page]");
+    if (!botao) return;
+
+    event.preventDefault();
+    trocarPagina(botao.dataset.paginationKey, botao.dataset.paginationPage);
+  });
+
+  window.Paginacao = {
+    aplicar
+  };
+})();
+
